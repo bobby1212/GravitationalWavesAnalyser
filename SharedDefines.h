@@ -16,6 +16,8 @@
 #include "boost\tokenizer.hpp"
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <future>
+#include <mutex>
+#include <chrono>
 
 enum IDs
 {

@@ -230,7 +230,19 @@ void BasicFrame::setMinHeight(wxCommandEvent & e)
 
 void BasicFrame::removeDuplicates(wxCommandEvent& event) 
 { 
-    std::thread t1(&Render::removeDuplicates, panelRender, 0.5f,removeDuplicateGauge);
-    t1.detach();
+    try
+    {
+        std::thread t1(&Render::removeDuplicates, panelRender, 0.5f, removeDuplicateGauge);
+        t1.detach();
+        if (t1.joinable())
+            SetStatusText("Thread joinable");
+        else
+            SetStatusText("Thread not joinable");
+    }
+    catch (...)
+    {
+        SetStatusText("remove Duplicates");
+    }
+    return;
 }
 

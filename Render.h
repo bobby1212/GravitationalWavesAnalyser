@@ -24,6 +24,8 @@ public:
     void setMaxHeight(double _newHeight) { maxHeight = _newHeight; }
     void setMinHeight(double _newHeight) { minHeight = _newHeight; }
     void removeDuplicates(double radius, wxGauge* gauge);
+    void removeDuplicatesThread(double radius, std::vector<Point>* points, std::vector<Point>::iterator begin, std::vector<Point>::iterator end, std::vector<Point>* duplicatePoints);
+    void updateRemoveDuplicatesGauge(wxGauge* gauge,bool& running);
 
 	//Input handlers
 	void OnKeyDown(wxKeyEvent& event);
@@ -62,5 +64,11 @@ private:
 
 	wxGLContext* glContext;
 	wxFrame* parent;
+
+    //Members used by removeDuplicate System
+    long long progressCounter;
+    std::mutex progressCounterMutex;
+    std::vector<Point> duplicatePoints;
+    long long totalSize;
 };
 

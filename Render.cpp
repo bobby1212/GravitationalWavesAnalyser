@@ -212,34 +212,33 @@ void Render::removeDuplicates(double radius,wxGauge* gauge)
         return;
     }
 
-    int totalSize = points->size() * points->size();
-    int i = 0;
+    totalSize = points->size() * points->size();
 
-    //This should be parrarelized
-    std::vector<Point> duplicatePoints;
+    bool updateGauge = true;
+    duplicatePoints.clear();
     std::list<std::thread> threads;
-    int nmbPossibleThreads = std::thread::hardware_concurrency();
+    int nmbPossibleThreads = std::thread::hardware_concurrency() - 1;
+
+    progressCounter = 0;
+
+    std::thread progressUpdater(&Render::updateRemoveDuplicatesGauge, this, gauge, std::ref(updateGauge));
     for (int x = 0; x < nmbPossibleThreads; x++)
     {
+        std::vector<Point>::iterator begin;
+        std::vector<Point>::iterator end;
+        
+        begin = points->begin() + (points->size() / nmbPossibleThreads) * x;
+        end = points->begin() + (points->size() / nmbPossibleThreads) * (x + 1);
 
+        threads.push_back(std::thread(&Render::removeDuplicatesThread, this, radius, points, begin, end, &duplicatePoints));
     }
 
-    for (std::vector<Point>::iterator itrO = points->begin(); itrO != points->end(); itrO++)
+    for (auto &i : threads)
     {
-        for (std::vector<Point>::iterator itrI = points->begin(); itrI != points->end(); itrI++)
-        {
-            gauge->SetValue((int)(((float)i / (float)totalSize)*100.0f));
-            ++i;
-            if (itrO != itrI)
-            {
-                if (*itrO == *itrI)
-                {
-                    if (std::find(duplicatePoints.begin(), duplicatePoints.end(),*itrI) == duplicatePoints.end()/*!(*itrI in duplicatePoints)*/)
-                        duplicatePoints.push_back(*itrI);
-                }
-            }
-        }
+        i.join();
     }
+    updateGauge = false;
+    progressUpdater.join();
 
     parent->SetStatusText("Removing " + std::to_string(duplicatePoints.size()) + " Points");
 
@@ -247,5 +246,43 @@ void Render::removeDuplicates(double radius,wxGauge* gauge)
         boost::remove_erase(*points, i);
 
     return;
+}
+
+void Render::removeDuplicatesThread(double radius, std::vector<Point>* points, std::vector<Point>::iterator begin, std::vector<Point>::iterator end, std::vector<Point>* duplicatePoints)
+{
+    std::vector<Point>::iterator itr = begin;
+    for (std::vector<Point>::iterator itrO = points->begin(); itrO != points->end(); itrO++)
+    {
+        for (; itr != end; ++itr)
+        {
+            progressCounter++;
+
+            if (itrO != itr)
+            {
+                if (*itrO == *itr)
+                {
+                    //if (std::find(duplicatePoints->begin(), duplicatePoints->end(), *begin) == duplicatePoints->end()/*!(*itrI in duplicatePoints)*/)
+                        duplicatePoints->push_back(*itr);
+                }
+            }
+        }
+        itr = begin;
+    }
+
+    return;
+}
+
+void Render::updateRemoveDuplicatesGauge(wxGauge * gauge,bool& running)
+{
+    while (running)
+    {
+        if (gauge)
+        {
+            parent->SetStatusText("Updating Total Progress: " + std::to_string(progressCounter) + " from " + std::to_string(totalSize));
+            float newValue = ((float)progressCounter / (float)totalSize) * 100.0f;
+            gauge->SetValue(newValue);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    }
 }
 

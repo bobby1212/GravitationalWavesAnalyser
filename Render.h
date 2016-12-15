@@ -33,6 +33,12 @@ public:
 
 	//Input handlers
 	void OnKeyDown(wxKeyEvent& event);
+
+    //Private member get functions;
+    double getMaxHeight() { return maxHeight; }
+    double getMinHeight() { return minHeight; }
+    double getMaxRadius() { return maxRadius; }
+    double getMinRadius() { return minRadius; }
 private:
 	ErrorHandler* errorHandler;
 	std::vector<Point>* points;

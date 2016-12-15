@@ -12,7 +12,7 @@ HeightmapExporter::~HeightmapExporter()
 {
 }
 
-bool HeightmapExporter::exportHeightmap(std::string fileName)
+bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,double minHeight,double minRadius,double maxRadius)
 {
     if (!points)
         return false;
@@ -26,15 +26,8 @@ bool HeightmapExporter::exportHeightmap(std::string fileName)
     if (!output.is_open())
         return false;
 
-    //Find highest and lowest point
-
-    for (auto &i : *points)
-    {
-        if (i.z < lowest)
-            lowest = i.z;
-        if (i.z > highest)
-            highest = i.z;
-    }
+    lowest = minHeight;
+    highest = maxHeight;
 
     /*
     File format:
@@ -53,17 +46,22 @@ bool HeightmapExporter::exportHeightmap(std::string fileName)
     delete[]header;
 
     float tempFloat = 0.0f;
+    double radius = 0.0f;
 
     for (auto i : *points)
     {
-        tempFloat = i.x;
-        output.write((char*)&tempFloat, sizeof(float));
+        radius = distance(Point(0, 0, 0), i);
+        if (i.z < maxHeight && i.z > minHeight && radius < maxRadius && radius > minRadius)
+        {
+            tempFloat = i.x;
+            output.write((char*)&tempFloat, sizeof(float));
 
-        tempFloat = i.y;
-        output.write((char*)&tempFloat, sizeof(float));
+            tempFloat = i.y;
+            output.write((char*)&tempFloat, sizeof(float));
 
-        tempFloat = map(i.z);
-        output.write((char*)&tempFloat, sizeof(float));
+            tempFloat = map(i.z);
+            output.write((char*)&tempFloat, sizeof(float));
+        }
     }
 
     return true;

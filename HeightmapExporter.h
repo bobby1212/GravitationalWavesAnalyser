@@ -8,7 +8,7 @@ public:
     HeightmapExporter(std::vector<Point>*);
     ~HeightmapExporter();
 
-    bool exportHeightmap(std::string fileName);
+    bool exportHeightmap(std::string fileName, double maxHeight, double minHeight, double minRadius, double maxRadius);
 
 private:
     std::vector<Point>* points;

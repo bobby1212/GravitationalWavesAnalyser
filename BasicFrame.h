@@ -19,6 +19,8 @@ public:
     void setMaxHeight(wxCommandEvent& event);
     void setMinHeight(wxCommandEvent& event);
     void removeDuplicates(wxCommandEvent& event);
+    void setMinRadius(wxCommandEvent& event);
+    void setMaxRadius(wxCommandEvent& event);
 
 	ErrorHandler* GetErrorHandler() { return errorHandler; }
 private:
@@ -62,6 +64,11 @@ private:
     wxSizer* removeDuplicatesSizer;
     wxButton* removeDuplicatesButton;
     wxGauge* removeDuplicateGauge;
+
+    wxSizer* radiusOptionSizer;
+    wxTextCtrl* maxRadius;
+    wxTextCtrl* minRadius;
+    wxStaticText* radiusOption;
 
 	int height, width;
 	Parser* parser;

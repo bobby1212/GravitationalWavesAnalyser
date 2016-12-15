@@ -35,6 +35,9 @@ Render::Render(wxFrame* _parent, int* args, int height, int width, int positionX
     rotationX = 0.0f;
     rotationY = 0.0f;
     maxHeight = 100000.0f;
+    minHeight = -10000.0f;
+    minRadius = 0.0f;
+    maxRadius = 10000.0f;
 }
 
 Render::~Render()
@@ -95,6 +98,9 @@ void Render::render(wxPaintEvent& evt)
     {
         if (points->size() == 1)
             errorHandler->DisplayError(ERROR_ONE_POINT);
+
+        float radius = 0.0f;
+        
         glBegin(GL_POINTS);
         for (auto &i : *points)
         {
@@ -103,7 +109,8 @@ void Render::render(wxPaintEvent& evt)
             The height of the gravitationwaves in the asc file ist the z-Value but here it must be the y-Value
             */
             //Render conditions (Normally set in option panel)
-            if (i.z-offsetZ < maxHeight && i.z-offsetZ > minHeight)
+            radius = distance(Point(0, 0, 0), i);
+            if (i.z-offsetZ < maxHeight && i.z-offsetZ > minHeight && radius < maxRadius && radius > minRadius)
                 glVertex3f((i.x + offsetX) / divisor, (i.y + offsetY) / divisor, (i.z - offsetZ) / heightDivisor);
         }
         glEnd();
@@ -180,20 +187,25 @@ void Render::OnKeyDown(wxKeyEvent & event)
 
 void Render::calcValues()
 {
+    float radius = 0.0f;
     for (auto &i : *points)
     {
-        if (i.x > maxX)
-            maxX = i.x;
-        if (i.x < minX)
-            minX = i.x;
-        if (i.y > maxY)
-            maxY = i.y;
-        if (i.y < minY)
-            minY = i.y;
-        if (i.z > maxZ)
-            maxZ = i.z;
-        if (i.z < minZ)
-            minZ = i.z;
+        radius = distance(Point(0, 0, 0), i);
+        if (i.z - offsetZ < maxHeight && i.z - offsetZ > minHeight && radius < maxRadius && radius > minRadius)
+        {
+            if (i.x > maxX)
+                maxX = i.x;
+            if (i.x < minX)
+                minX = i.x;
+            if (i.y > maxY)
+                maxY = i.y;
+            if (i.y < minY)
+                minY = i.y;
+            if (i.z > maxZ)
+                maxZ = i.z;
+            if (i.z < minZ)
+                minZ = i.z;
+        }
     }
 
     divisor = fabs(minX - maxX);

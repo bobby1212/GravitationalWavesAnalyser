@@ -52,6 +52,11 @@ bool BasicFrame::CreatePanels()
     removeDuplicatesButton = new wxButton(panelOptions, ID_OPTION_REMOVE_DUPLICATES, "Remove duplicates");
     removeDuplicateGauge = new wxGauge(panelOptions, wxID_ANY, 100,wxDefaultPosition,wxSize(100,25),wxGA_HORIZONTAL | wxGA_SMOOTH);
 
+    radiusOptionSizer = new wxBoxSizer(wxHORIZONTAL);
+    radiusOption = new wxStaticText(panelOptions, wxID_ANY, "Max. and min. radius");
+    maxRadius = new wxTextCtrl(panelOptions,ID_OPTION_MAX_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
+    minRadius = new wxTextCtrl(panelOptions, ID_OPTION_MIN_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
+
     //Set the sizers
     nmbPointSizer->Add(nmbPointsText, wxEXPAND);
     nmbPointSizer->Add(nmbPoints, wxALIGN_CENTER | wxEXPAND);
@@ -71,12 +76,17 @@ bool BasicFrame::CreatePanels()
     removeDuplicatesSizer->Add(removeDuplicatesButton, wxEXPAND);
     removeDuplicatesSizer->Add(removeDuplicateGauge, wxEXPAND);
 
+    radiusOptionSizer->Add(radiusOption, wxEXPAND);
+    radiusOptionSizer->Add(maxRadius, wxEXPAND);
+    radiusOptionSizer->Add(minRadius, wxEXPAND);
+
     optionsSizer->Add(divisorSizer,0, wxEXPAND);
     optionsSizer->Add(heightDivisorSizer,0, wxEXPAND);
     optionsSizer->Add(nmbPointSizer, 0, wxEXPAND);
     optionsSizer->Add(maxHeightSizer, 0, wxEXPAND);
     optionsSizer->Add(minHeightSizer, 0, wxEXPAND);
     optionsSizer->Add(removeDuplicatesSizer, 0, wxEXPAND);
+    optionsSizer->Add(radiusOptionSizer, 0, wxEXPAND);
 
     panelOptions->SetSizer(optionsSizer);
     panelOptions->SetAutoLayout(true);
@@ -119,6 +129,8 @@ EVT_TEXT_ENTER(ID_OPTION_DIVISOR, BasicFrame::setDivisor)
 EVT_TEXT_ENTER(ID_OPTION_MAX_HEIGHT, BasicFrame::setMaxHeight)
 EVT_TEXT_ENTER(ID_OPTION_MIN_HEIGHT, BasicFrame::setMinHeight)
 EVT_BUTTON(ID_OPTION_REMOVE_DUPLICATES, BasicFrame::removeDuplicates)
+EVT_TEXT_ENTER(ID_OPTION_MIN_RADIUS, BasicFrame::setMinRadius)
+EVT_TEXT_ENTER(ID_OPTION_MAX_RADIUS, BasicFrame::setMaxRadius)
 EVT_MENU(ID_FILE_OPEN, BasicFrame::OnFileOpen)
 EVT_MENU(ID_EXPORT_HEIGHTMAP, BasicFrame::OnExportHeightmap)
 
@@ -244,5 +256,33 @@ void BasicFrame::removeDuplicates(wxCommandEvent& event)
         SetStatusText("remove Duplicates");
     }
     return;
+}
+
+void BasicFrame::setMinRadius(wxCommandEvent & event)
+{
+    try
+    {
+        panelRender->setMinRadius(boost::lexical_cast<double>(event.GetString()));
+        panelRender->calcValues();
+        Refresh();
+    }
+    catch (boost::bad_lexical_cast)
+    {
+        errorHandler->DisplayError(ERROR_NAN);
+    }
+}
+
+void BasicFrame::setMaxRadius(wxCommandEvent & event)
+{
+    try
+    {
+        panelRender->setMaxRadius(boost::lexical_cast<double>(event.GetString()));
+        panelRender->calcValues();
+        Refresh();
+    }
+    catch (boost::bad_lexical_cast)
+    {
+        errorHandler->DisplayError(ERROR_NAN);
+    }
 }
 

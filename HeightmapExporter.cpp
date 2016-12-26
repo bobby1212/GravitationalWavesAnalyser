@@ -31,36 +31,41 @@ bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,d
 
     /*
     File format:
-    Filename extension: .bin
+    Filename extension: .hm
 
     80 Byte: Header
+    4 Byte int: Max. Radius
 
-    //Vertex
-    4 Byte float: x
-    4 Byte float: y
+    //Matrix
+    4 Byte int: x
+    4 Byte int: y
     4 Byte float: z
+
+    Matrix begin at x=0,y=0
     */
 
     char* header = new char[80]{ "Header" };
     output.write(header, 80);
     delete[]header;
+    int temp = maxRadius;
+    output.write((char*)&temp, sizeof(int));
 
     float tempFloat = 0.0f;
     double radius = 0.0f;
 
+    int xRes = 100;
+    int yRes = 100;
+
     for (auto i : *points)
     {
-        radius = distance(Point(0, 0, 0), i);
-        if (i.z < maxHeight && i.z > minHeight && radius < maxRadius && radius > minRadius)
+        int radius = distance(Point(), i);
+        if (radius < maxRadius)
         {
-            tempFloat = i.x;
-            output.write((char*)&tempFloat, sizeof(float));
-
-            tempFloat = i.y;
-            output.write((char*)&tempFloat, sizeof(float));
-
-            tempFloat = map(i.z);
-            output.write((char*)&tempFloat, sizeof(float));
+            int xPos = (int)i.x;
+            int yPos = (int)i.y;
+            output.write((char*)&xPos, sizeof(int));
+            output.write((char*)&yPos, sizeof(int));
+            output.write((char*)&i.z, sizeof(float));
         }
     }
 

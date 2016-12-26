@@ -166,7 +166,7 @@ void BasicFrame::OnExportHeightmap(wxCommandEvent & event)
     if (parser)
     {
         HeightmapExporter exporter(parser->GetPoints());
-        if (!exporter.exportHeightmap("out.bin", panelRender->GetMaxHeight(), panelRender->getMinHeight(), panelRender->getMaxRadius(), panelRender->getMinRadius()))
+        if (!exporter.exportHeightmap("out.hm", panelRender->GetMaxHeight(), panelRender->getMinHeight(), panelRender->getMinRadius(), panelRender->getMaxRadius()))
             errorHandler->DisplayError("Error at exporting file");
         else
             SetStatusText("Export successful");

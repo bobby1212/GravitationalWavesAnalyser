@@ -35,6 +35,8 @@ bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,d
 
     80 Byte: Header
     4 Byte int: Max. Radius
+    4 Byte float: Heightest point
+    4 Byte float: Lowest point
 
     //Matrix
     4 Byte int: x
@@ -47,6 +49,7 @@ bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,d
     char* header = new char[80]{ "Header" };
     output.write(header, 80);
     delete[]header;
+    maxRadius = 50;
     int temp = maxRadius;
     output.write((char*)&temp, sizeof(int));
 
@@ -55,17 +58,44 @@ bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,d
 
     int xRes = 100;
     int yRes = 100;
+    float heighestPoint = -10000.0f;
+    float lowestPoint = 10000.0f;
+
+    std::vector<std::vector<float>> matrix;
+    matrix.resize(xRes);
+    for (auto &i : matrix)
+    {
+        i.resize(yRes,0);
+    }
 
     for (auto i : *points)
     {
         int radius = distance(Point(), i);
-        if (radius < maxRadius)
+        if (radius < maxRadius && radius > minRadius)
         {
-            int xPos = (int)i.x;
-            int yPos = (int)i.y;
-            output.write((char*)&xPos, sizeof(int));
-            output.write((char*)&yPos, sizeof(int));
-            output.write((char*)&i.z, sizeof(float));
+            int xPos = (int)i.x + maxRadius;
+            int yPos = (int)i.y + maxRadius;
+            if (matrix[xPos][yPos] == 0)
+            {
+                matrix[xPos][yPos] = i.z;
+                if (i.z > heighestPoint)
+                    heighestPoint = i.z;
+                if (i.z < lowestPoint)
+                    lowestPoint = i.z;
+            }
+        }
+    }
+
+    output.write((char*)&heighestPoint, sizeof(float));
+    output.write((char*)&lowestPoint, sizeof(float));
+
+    for (int x = 0; x < xRes; x++)
+    {
+        for (int y = 0; y < yRes; y++)
+        {
+            output.write((char*)&x, sizeof(int));
+            output.write((char*)&y, sizeof(int));
+            output.write((char*)&matrix[x][y], sizeof(float));
         }
     }
 

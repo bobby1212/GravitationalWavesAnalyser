@@ -21,6 +21,7 @@ set(SOURCE
 	Parser.cpp
 	Render.cpp
 	Triangulation.cpp
+	PointBinaryTreeSort.h
 )
 
 set(HEADER
@@ -33,6 +34,7 @@ set(HEADER
 	Render.h
 	SharedDefines.h
 	Triangulation.h
+	PointBinaryTreeSort.h
 )
 
 include_directories(${Boost_INCLUDE_DIRS} ${wxWidgets_INCLUDE_DIRS})

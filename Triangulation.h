@@ -1,5 +1,5 @@
 #pragma once
-/*#include "SharedDefines.h"
+#include "SharedDefines.h"
 #include "GeometryDefines.h"
 #include "Parser.h"
 
@@ -22,4 +22,3 @@ private:
 	pTriangle T2;
 	std::vector<pTriangle> triangles;
 };
-*/

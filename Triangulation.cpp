@@ -1,4 +1,4 @@
-/*#include "Triangulation.h"
+#include "Triangulation.h"
 
 
 
@@ -80,7 +80,7 @@ bool Triangulation::Triangulate()
 			switch (pos)
 			{
 			case 0:
-				if (T->n1 in illegal_triangles)
+				if (std::find(illegal_triangles.begin(), illegal_triangles.end(),T->n1) != illegal_triangles.end())
 				{
 					if (T->n1->n1 == T)
 						pos = 1;
@@ -101,7 +101,7 @@ bool Triangulation::Triangulate()
 
 			case 1:
 
-				if (T->n2 in illegal_triangles)
+				if (std::find(illegal_triangles.begin(), illegal_triangles.end(), T->n2) != illegal_triangles.end())
 				{
 					if (T->n2->n1 == T)
 						pos = 1;
@@ -120,7 +120,7 @@ bool Triangulation::Triangulate()
 				break;
 
 			case 2:
-				if (T->n3 in illegal_triangles)
+				if (std::find(illegal_triangles.begin(), illegal_triangles.end(), T->n3) != illegal_triangles.end())
 				{
 					if (T->n3->n1 == T)
 						pos = 1;
@@ -165,7 +165,7 @@ bool Triangulation::Triangulate()
 			if (!edge.triangle)
 				edge.triangle = nullptr;
 			else
-				if (!edge.triangle in triangles)
+				if (std::find(illegal_triangles.begin(), illegal_triangles.end(), edge.triangle) == illegal_triangles.end())
 					edge.triangle = nullptr;
 			T->n2 = edge.triangle;
 
@@ -194,4 +194,3 @@ bool Triangulation::Triangulate()
 
 	return true;
 }
-*/

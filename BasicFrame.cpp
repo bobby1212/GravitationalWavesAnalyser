@@ -52,6 +52,10 @@ bool BasicFrame::CreatePanels()
     removeDuplicatesButton = new wxButton(panelOptions, ID_OPTION_REMOVE_DUPLICATES, "Remove duplicates");
     removeDuplicateGauge = new wxGauge(panelOptions, wxID_ANY, 100,wxDefaultPosition,wxSize(100,25),wxGA_HORIZONTAL | wxGA_SMOOTH);
 
+    triangulateSizer = new wxBoxSizer(wxHORIZONTAL);
+    triangulateButton = new wxButton(panelOptions, ID_OPTION_TRIANGULATE, "Triangulate");
+    triangulateGauge = new wxGauge(panelOptions, wxID_ANY, 100, wxDefaultPosition, wxSize(100, 25), wxGA_HORIZONTAL | wxGA_SMOOTH);
+
     radiusOptionSizer = new wxBoxSizer(wxHORIZONTAL);
     radiusOption = new wxStaticText(panelOptions, wxID_ANY, "Max. and min. radius");
     maxRadius = new wxTextCtrl(panelOptions,ID_OPTION_MAX_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
@@ -76,6 +80,9 @@ bool BasicFrame::CreatePanels()
     removeDuplicatesSizer->Add(removeDuplicatesButton, wxEXPAND);
     removeDuplicatesSizer->Add(removeDuplicateGauge, wxEXPAND);
 
+    triangulateSizer->Add(triangulateButton, wxEXPAND);
+    triangulateSizer->Add(triangulateGauge, wxEXPAND);
+
     radiusOptionSizer->Add(radiusOption, wxEXPAND);
     radiusOptionSizer->Add(maxRadius, wxEXPAND);
     radiusOptionSizer->Add(minRadius, wxEXPAND);
@@ -86,6 +93,7 @@ bool BasicFrame::CreatePanels()
     optionsSizer->Add(maxHeightSizer, 0, wxEXPAND);
     optionsSizer->Add(minHeightSizer, 0, wxEXPAND);
     optionsSizer->Add(removeDuplicatesSizer, 0, wxEXPAND);
+    optionsSizer->Add(triangulateSizer, 0, wxEXPAND);
     optionsSizer->Add(radiusOptionSizer, 0, wxEXPAND);
 
     panelOptions->SetSizer(optionsSizer);
@@ -244,18 +252,26 @@ void BasicFrame::removeDuplicates(wxCommandEvent& event)
 { 
     try
     {
-        std::thread t1(&Render::removeDuplicates, panelRender, 0.5f, removeDuplicateGauge);
+        std::thread t1(&Render::removeDuplicates, panelRender, 0.5f, nmbPoints);
         t1.detach();
-        if (t1.joinable())
-            SetStatusText("Thread joinable");
-        else
-            SetStatusText("Thread not joinable");
     }
     catch (...)
     {
         SetStatusText("remove Duplicates");
     }
     return;
+}
+
+void BasicFrame::triangulatePoints(wxCommandEvent & event)
+{
+
+    Triangulation tri;
+
+    tri.SetPoints(parser);  
+
+    if (tri.Triangulate())
+        panelRender->setTriangles(tri.GetTriangles());
+
 }
 
 void BasicFrame::setMinRadius(wxCommandEvent & event)
@@ -284,5 +300,10 @@ void BasicFrame::setMaxRadius(wxCommandEvent & event)
     {
         errorHandler->DisplayError(ERROR_NAN);
     }
+}
+
+void BasicFrame::updateNmbPoints(int _nmbPoints)
+{
+    nmbPoints->SetLabelText(std::to_string(_nmbPoints));
 }
 

@@ -18,6 +18,7 @@
 #include <future>
 #include <mutex>
 #include <chrono>
+#include <set>
 
 enum IDs
 {
@@ -37,6 +38,7 @@ enum IDs
     ID_OPTION_MAX_HEIGHT,
     ID_OPTION_MIN_HEIGHT,
     ID_OPTION_REMOVE_DUPLICATES,
+    ID_OPTION_TRIANGULATE,
     ID_OPTION_MAX_RADIUS,
     ID_OPTION_MIN_RADIUS,
     

@@ -4,6 +4,7 @@
 #include "Parser.h"
 #include "ErrorHandler.h"
 #include "HeightmapExporter.h"
+#include "Triangulation.h"
 
 class BasicFrame : public wxFrame
 {
@@ -19,10 +20,13 @@ public:
     void setMaxHeight(wxCommandEvent& event);
     void setMinHeight(wxCommandEvent& event);
     void removeDuplicates(wxCommandEvent& event);
+    void triangulatePoints(wxCommandEvent& event);
     void setMinRadius(wxCommandEvent& event);
     void setMaxRadius(wxCommandEvent& event);
 
 	ErrorHandler* GetErrorHandler() { return errorHandler; }
+
+    void updateNmbPoints(int nmbPoints);
 private:
 	wxBoxSizer* sizer;
 	wxPanel* panelOptions;
@@ -64,6 +68,10 @@ private:
     wxSizer* removeDuplicatesSizer;
     wxButton* removeDuplicatesButton;
     wxGauge* removeDuplicateGauge;
+
+    wxSizer* triangulateSizer;
+    wxButton* triangulateButton;
+    wxGauge* triangulateGauge;
 
     wxSizer* radiusOptionSizer;
     wxTextCtrl* maxRadius;

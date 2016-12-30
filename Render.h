@@ -12,7 +12,7 @@ public:
 	Render(wxFrame* parent, int* args, int height, int width, int positionX);
 	~Render();
 	void setPoints(std::vector<Point>*);
-	void setTriangles(std::vector<pTriangle>*);
+	void setTriangles(std::vector<pTriangle>);
 	void Init();
 	void render(wxPaintEvent& evt);
 	void activateRenderTriangles(bool);
@@ -41,7 +41,7 @@ public:
 private:
 	ErrorHandler* errorHandler;
 	std::vector<Point>* points;
-	std::vector<pTriangle>* triangles;
+	std::vector<pTriangle> triangles;
 	bool renderTriangles;
 	bool renderPoints;
 

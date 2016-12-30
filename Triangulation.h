@@ -7,14 +7,14 @@ class Triangulation
 {
 public:
 	Triangulation();
-	Triangulation(Parser*);
 	~Triangulation();
 	void SetPoints(Parser*);
 	bool Triangulate();
-	std::vector<pTriangle>* GetTriangles() { return &triangles; }
+	std::vector<pTriangle> GetTriangles() { return triangles; }
 private:
 	clock_t timeBegin;
-	std::vector<Point>* points;
+	std::vector<Point> points;
+    std::vector<Point>* ppoints;
 	std::vector<pTriangle> illegal_triangles;
 	std::vector<Edge> boundary;
 	matrix triangleMatrix;

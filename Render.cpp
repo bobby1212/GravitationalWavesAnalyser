@@ -52,8 +52,9 @@ void Render::setPoints(std::vector<Point>* _points)
     calcValues();
 }
 
-void Render::setTriangles(std::vector<pTriangle>* _triangles)
+void Render::setTriangles(std::vector<pTriangle> _triangles)
 {
+    parent->SetStatusText("Triangles set! Count: " + std::to_string(_triangles.size()));
     triangles = _triangles;
 }
 
@@ -116,12 +117,11 @@ void Render::render(wxPaintEvent& evt)
         }
         glEnd();
     }
-    /*if (renderTriangles)
+    if (triangles.size() > 0)
     {
         glLineWidth(2.5f);
         glColor3f(1.0f, 1.0f, 1.0f);
-        Point normal;
-        for (auto &i : *triangles)
+        for (auto &i : triangles)
         {
             glColor3f(1.0f, 1.0f, 1.0f);
             glBegin(GL_TRIANGLES);
@@ -143,7 +143,7 @@ void Render::render(wxPaintEvent& evt)
             glVertex3f(((*points)[i->p1].x + offsetX) / divisor, ((*points)[i->p1].y + offsetY) / divisor, ((*points)[i->p1].z - offsetZ) / heightDivisor);
             glEnd();
         }
-    }*/
+    }
 
     glFlush();
     SwapBuffers();

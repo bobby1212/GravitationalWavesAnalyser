@@ -295,10 +295,15 @@ void BasicFrame::generatePoints(wxCommandEvent & event)
         parser->generatePoints(boost::lexical_cast<int>(generatePointsCount->GetValue()),clock());
         panelRender->setPoints(parser->GetPoints());
         panelRender->calcValues();
+        panelRender->Refresh();
     }
     catch (boost::bad_lexical_cast)
     {
         errorHandler->DisplayError(ERROR_NAN);
+    }
+    catch (...)
+    {
+        errorHandler->DisplayError(ERROR_UNKNOWN);
     }
 }
 

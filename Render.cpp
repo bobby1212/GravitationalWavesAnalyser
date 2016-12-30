@@ -12,6 +12,7 @@ Render::Render(wxFrame* _parent, int* args, int height, int width, int positionX
     glContext = new wxGLContext(this);
     SetBackgroundStyle(wxBG_STYLE_PAINT);
     Init();
+    //basicParent = _basicParent;
 
     rotationSpeed = 1.05f;
     translationSpeed = 0.05f;
@@ -214,7 +215,9 @@ void Render::calcValues()
     //TODO: Update option panel values
 }
 
-void Render::removeDuplicates(double radius,wxGauge* gauge)
+#define VARIANCE 1
+
+void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText)
 {
     if (!points)
         return;
@@ -224,77 +227,25 @@ void Render::removeDuplicates(double radius,wxGauge* gauge)
         return;
     }
 
-    totalSize = points->size() * points->size();
+    //First sort the points
+    //x Axis:
+    PointBinaryTreeSort sort;
+    std::list<Point*> sortedPoints = sort.SortPointsXAxis(points);
 
-    bool updateGauge = true;
-    duplicatePoints.clear();
-    std::list<std::thread> threads;
-    int nmbPossibleThreads = std::thread::hardware_concurrency() - 1;
-
-    progressCounter = 0;
-
-    std::thread progressUpdater(&Render::updateRemoveDuplicatesGauge, this, gauge, std::ref(updateGauge));
-    for (int x = 0; x < nmbPossibleThreads; x++)
-    {
-        std::vector<Point>::iterator begin;
-        std::vector<Point>::iterator end;
+    for (std::list<Point*>::iterator itr = sortedPoints.begin();itr != --sortedPoints.end();)
+    {   
         
-        begin = points->begin() + (points->size() / nmbPossibleThreads) * x;
-        end = points->begin() + (points->size() / nmbPossibleThreads) * (x + 1);
-
-        threads.push_back(std::thread(&Render::removeDuplicatesThread, this, radius, points, begin, end, &duplicatePoints));
+        if ((*itr)->x - (*(++itr))->x < VARIANCE && (*(--itr))->y - (*(++itr))->y < VARIANCE)
+        {
+            --itr;
+            itr = sortedPoints.erase(itr);
+        }
     }
 
-    for (auto &i : threads)
-    {
-        i.join();
-    }
-    updateGauge = false;
-    progressUpdater.join();
+    int size = sortedPoints.size();
 
-    parent->SetStatusText("Removing " + std::to_string(duplicatePoints.size()) + " Points");
-
-    for (auto &i : duplicatePoints)
-        boost::remove_erase(*points, i);
+    parent->SetStatusText("Removed duplicated points!");
+    nmbPointsText->SetLabel(std::to_string(sortedPoints.size()));
 
     return;
 }
-
-void Render::removeDuplicatesThread(double radius, std::vector<Point>* points, std::vector<Point>::iterator begin, std::vector<Point>::iterator end, std::vector<Point>* duplicatePoints)
-{
-    std::vector<Point>::iterator itr = begin;
-    for (std::vector<Point>::iterator itrO = points->begin(); itrO != points->end(); itrO++)
-    {
-        for (; itr != end; ++itr)
-        {
-            progressCounter++;
-
-            if (itrO != itr)
-            {
-                if (*itrO == *itr)
-                {
-                    //if (std::find(duplicatePoints->begin(), duplicatePoints->end(), *begin) == duplicatePoints->end()/*!(*itrI in duplicatePoints)*/)
-                        duplicatePoints->push_back(*itr);
-                }
-            }
-        }
-        itr = begin;
-    }
-
-    return;
-}
-
-void Render::updateRemoveDuplicatesGauge(wxGauge * gauge,bool& running)
-{
-    while (running)
-    {
-        if (gauge)
-        {
-            parent->SetStatusText("Updating Total Progress: " + std::to_string(progressCounter) + " from " + std::to_string(totalSize));
-            float newValue = ((float)progressCounter / (float)totalSize) * 100.0f;
-            gauge->SetValue(newValue);
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    }
-}
-

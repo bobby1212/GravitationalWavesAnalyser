@@ -3,6 +3,7 @@
 #include "GeometryDefines.h"
 #include "ErrorHandler.h"
 #include <time.h>
+#include "PointBinaryTreeSort.h"
 
 class Render : public wxGLCanvas
 {
@@ -23,13 +24,9 @@ public:
 	void setDivisor(double _divisor) { divisor = _divisor; }
     void setMaxHeight(double _newHeight) { maxHeight = _newHeight; }
     void setMinHeight(double _newHeight) { minHeight = _newHeight; }
-    void removeDuplicates(double radius, wxGauge* gauge);
+    void removeDuplicates(double radius,wxStaticBox* nmbPointsText);
     void setMinRadius(double _radius) { minRadius = _radius; }
     void setMaxRadius(double _radius) { maxRadius = _radius; }
-
-    //Functions needed by the remove duplicates system
-    void removeDuplicatesThread(double radius, std::vector<Point>* points, std::vector<Point>::iterator begin, std::vector<Point>::iterator end, std::vector<Point>* duplicatePoints);
-    void updateRemoveDuplicatesGauge(wxGauge* gauge,bool& running);
 
 	//Input handlers
 	void OnKeyDown(wxKeyEvent& event);
@@ -39,6 +36,7 @@ public:
     double getMinHeight() { return minHeight; }
     double getMaxRadius() { return maxRadius; }
     double getMinRadius() { return minRadius; }
+
 private:
 	ErrorHandler* errorHandler;
 	std::vector<Point>* points;
@@ -75,7 +73,7 @@ private:
     double maxRadius;
 
 	wxGLContext* glContext;
-	wxFrame* parent;
+    wxFrame* parent;
 
     //Members used by removeDuplicate System
     long long progressCounter;
@@ -83,4 +81,3 @@ private:
     std::vector<Point> duplicatePoints;
     long long totalSize;
 };
-

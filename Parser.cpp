@@ -161,3 +161,34 @@ void Parser::reducePoints(int nmbPoints)
 	}
 }
 
+void Parser::generatePoints(int count,int seed)
+{
+    minX = -10;
+    maxX = 10;
+    minY = -10;
+    maxY = 10;
+    base_generator_type generator(seed);
+    boost::uniform_real<> uni_dist(minX, maxX);
+    boost::variate_generator<base_generator_type&, boost::uniform_real<>> uni(generator, uni_dist);
+    boost::uniform_real<> uni_dist_height(0, 2);
+    boost::variate_generator<base_generator_type&, boost::uniform_real<>> uni_height(generator, uni_dist_height);
+    
+    points.clear();
+
+    while (points.size() != count)
+    {
+        double x = uni();
+        double y = uni();
+        Point newPoint;
+        newPoint.x = x;
+        newPoint.y = y;
+        newPoint.z = uni_height();
+        while (std::find(points.begin(), points.end(),newPoint) != points.end())
+        {
+            newPoint.x = uni();
+            newPoint.y = uni();
+        }
+        points.push_back(newPoint);
+    }
+}
+

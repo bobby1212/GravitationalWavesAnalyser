@@ -56,6 +56,10 @@ bool BasicFrame::CreatePanels()
     triangulateButton = new wxButton(panelOptions, ID_OPTION_TRIANGULATE, "Triangulate");
     triangulateGauge = new wxGauge(panelOptions, wxID_ANY, 100, wxDefaultPosition, wxSize(100, 25), wxGA_HORIZONTAL | wxGA_SMOOTH);
 
+    generatePointsSizer = new wxBoxSizer(wxHORIZONTAL);
+    generatePointsButton = new wxButton(panelOptions, ID_OPTION_GENERATE_POINTS, "Generate Points");
+    generatePointsCount = new wxTextCtrl(panelOptions,ID_OPTION_GENERATE_POINTS_COUNT,"100", wxDefaultPosition, wxDefaultSize, wxTE_CENTER);
+
     radiusOptionSizer = new wxBoxSizer(wxHORIZONTAL);
     radiusOption = new wxStaticText(panelOptions, wxID_ANY, "Max. and min. radius");
     maxRadius = new wxTextCtrl(panelOptions,ID_OPTION_MAX_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
@@ -83,6 +87,9 @@ bool BasicFrame::CreatePanels()
     triangulateSizer->Add(triangulateButton, wxEXPAND);
     triangulateSizer->Add(triangulateGauge, wxEXPAND);
 
+    generatePointsSizer->Add(generatePointsButton, wxEXPAND);
+    generatePointsSizer->Add(generatePointsCount, wxEXPAND);
+
     radiusOptionSizer->Add(radiusOption, wxEXPAND);
     radiusOptionSizer->Add(maxRadius, wxEXPAND);
     radiusOptionSizer->Add(minRadius, wxEXPAND);
@@ -94,6 +101,7 @@ bool BasicFrame::CreatePanels()
     optionsSizer->Add(minHeightSizer, 0, wxEXPAND);
     optionsSizer->Add(removeDuplicatesSizer, 0, wxEXPAND);
     optionsSizer->Add(triangulateSizer, 0, wxEXPAND);
+    optionsSizer->Add(generatePointsSizer, 0, wxEXPAND);
     optionsSizer->Add(radiusOptionSizer, 0, wxEXPAND);
 
     panelOptions->SetSizer(optionsSizer);
@@ -138,6 +146,7 @@ EVT_TEXT_ENTER(ID_OPTION_MAX_HEIGHT, BasicFrame::setMaxHeight)
 EVT_TEXT_ENTER(ID_OPTION_MIN_HEIGHT, BasicFrame::setMinHeight)
 EVT_BUTTON(ID_OPTION_REMOVE_DUPLICATES, BasicFrame::removeDuplicates)
 EVT_BUTTON(ID_OPTION_TRIANGULATE, BasicFrame::triangulatePoints)
+EVT_BUTTON(ID_OPTION_GENERATE_POINTS, BasicFrame::generatePoints)
 EVT_TEXT_ENTER(ID_OPTION_MIN_RADIUS, BasicFrame::setMinRadius)
 EVT_TEXT_ENTER(ID_OPTION_MAX_RADIUS, BasicFrame::setMaxRadius)
 EVT_MENU(ID_FILE_OPEN, BasicFrame::OnFileOpen)
@@ -275,6 +284,22 @@ void BasicFrame::triangulatePoints(wxCommandEvent & event)
     else
         errorHandler->DisplayError("Something went wrong at triangulation!");
 
+}
+
+void BasicFrame::generatePoints(wxCommandEvent & event)
+{
+    try
+    {
+        parser = new Parser(this);
+
+        parser->generatePoints(boost::lexical_cast<int>(generatePointsCount->GetValue()),clock());
+        panelRender->setPoints(parser->GetPoints());
+        panelRender->calcValues();
+    }
+    catch (boost::bad_lexical_cast)
+    {
+        errorHandler->DisplayError(ERROR_NAN);
+    }
 }
 
 void BasicFrame::setMinRadius(wxCommandEvent & event)

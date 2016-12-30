@@ -21,6 +21,7 @@ public:
     void setMinHeight(wxCommandEvent& event);
     void removeDuplicates(wxCommandEvent& event);
     void triangulatePoints(wxCommandEvent& event);
+    void generatePoints(wxCommandEvent& event);
     void setMinRadius(wxCommandEvent& event);
     void setMaxRadius(wxCommandEvent& event);
 
@@ -72,6 +73,10 @@ private:
     wxSizer* triangulateSizer;
     wxButton* triangulateButton;
     wxGauge* triangulateGauge;
+
+    wxSizer* generatePointsSizer;
+    wxButton* generatePointsButton;
+    wxTextCtrl* generatePointsCount;
 
     wxSizer* radiusOptionSizer;
     wxTextCtrl* maxRadius;

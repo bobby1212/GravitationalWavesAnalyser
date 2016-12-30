@@ -49,15 +49,14 @@ bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,d
     char* header = new char[80]{ "Header" };
     output.write(header, 80);
     delete[]header;
-    maxRadius = 50;
     int temp = maxRadius;
     output.write((char*)&temp, sizeof(int));
 
     float tempFloat = 0.0f;
     double radius = 0.0f;
 
-    int xRes = 100;
-    int yRes = 100;
+    int xRes = maxRadius*2;
+    int yRes = xRes;
     float heighestPoint = -10000.0f;
     float lowestPoint = 10000.0f;
 
@@ -93,6 +92,12 @@ bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,d
     {
         for (int y = 0; y < yRes; y++)
         {
+            //If the value is 0 we have to interpolate the value
+            if (matrix[x][y] == 0 && y != yRes-1 && x != xRes-1 && y > 0 && x > 0)
+            {
+                //matrix[x][y] = (matrix[x + 1][y] + matrix[x + 1][y + 1] + matrix[x][y + 1] + matrix[x - 1][y + 1] + matrix[x - 1][y] + matrix[x - 1][y - 1]) / 6.0f;
+            }
+
             output.write((char*)&x, sizeof(int));
             output.write((char*)&y, sizeof(int));
             output.write((char*)&matrix[x][y], sizeof(float));
@@ -100,11 +105,4 @@ bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,d
     }
 
     return true;
-}
-
-float HeightmapExporter::map(float value)
-{
-    //If your number X falls between A and B, and you would like Y to fall between C and D, you can apply the following linear transform:
-    //Linear transformation: Y = (X-A)/(B-A) * (D-C) + C
-    return (value-highest)/(lowest-value) * (0.0f-1.0f) + 0.0f;
 }

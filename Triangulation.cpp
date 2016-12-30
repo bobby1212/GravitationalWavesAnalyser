@@ -22,7 +22,7 @@ Triangulation::Triangulation(Parser* parser)
 	points->push_back(Point(parser->GetMaxX(), parser->GetMaxY()));
 	points->push_back(Point(parser->GetMinX(), parser->GetMaxY()));
 
-	points->insert(points->end(), parser->GetPoints()->begin(), parser->GetPoints()->end());
+    points->insert(points->end(), parser->GetPoints()->begin(), parser->GetPoints()->end());
 }
 
 
@@ -32,12 +32,14 @@ Triangulation::~Triangulation()
 
 void Triangulation::SetPoints(Parser* parser)
 {
-	points->push_back(Point(parser->GetMinX(), parser->GetMinY()));
-	points->push_back(Point(parser->GetMaxX(), parser->GetMinY()));
-	points->push_back(Point(parser->GetMaxX(), parser->GetMaxY()));
-	points->push_back(Point(parser->GetMinX(), parser->GetMaxY()));
+    points = parser->GetPoints();
 
-	points->insert(points->end(), parser->GetPoints()->begin(), parser->GetPoints()->end());
+    points->insert(points->begin(), Point(parser->GetMinX(), parser->GetMaxY()));
+    points->insert(points->begin(), Point(parser->GetMaxX(), parser->GetMaxY()));
+    points->insert(points->begin(), Point(parser->GetMaxX(), parser->GetMinY()));
+    points->insert(points->begin(), Point(parser->GetMinX(), parser->GetMinY()));
+
+    return;
 }
 
 bool Triangulation::Triangulate()
@@ -53,8 +55,17 @@ bool Triangulation::Triangulate()
 	triangles.push_back(T1);
 	triangles.push_back(T2);
 
+    int size = points->size();
+    Point p1 = (*points)[0];
+    Point p2 = (*points)[1];
+    Point p3 = (*points)[2];
+    Point p4 = (*points)[3];
+
 	for (auto &point : *points)
 	{
+
+        if (point == (*points)[0] || point == (*points)[1] || point == (*points)[2] || point == (*points)[3])
+            continue;
 
 		//Check wich triangles are illegal
 		for (auto &T : triangles)

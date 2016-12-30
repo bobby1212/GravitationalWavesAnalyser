@@ -67,7 +67,7 @@ private:
 
     wxSizer* removeDuplicatesSizer;
     wxButton* removeDuplicatesButton;
-    wxGauge* removeDuplicateGauge;
+    wxTextCtrl* removeDuplicatesVariance;
 
     wxSizer* triangulateSizer;
     wxButton* triangulateButton;

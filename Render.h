@@ -4,6 +4,7 @@
 #include "ErrorHandler.h"
 #include <time.h>
 #include "PointBinaryTreeSort.h"
+#include "Parser.h"
 
 class Render : public wxGLCanvas
 {
@@ -24,7 +25,7 @@ public:
 	void setDivisor(double _divisor) { divisor = _divisor; }
     void setMaxHeight(double _newHeight) { maxHeight = _newHeight; }
     void setMinHeight(double _newHeight) { minHeight = _newHeight; }
-    void removeDuplicates(double radius,wxStaticBox* nmbPointsText);
+    void removeDuplicates(double radius,wxStaticBox* nmbPointsText, Parser* parser, float variance);
     void setMinRadius(double _radius) { minRadius = _radius; }
     void setMaxRadius(double _radius) { maxRadius = _radius; }
 

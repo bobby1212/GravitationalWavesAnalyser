@@ -215,9 +215,7 @@ void Render::calcValues()
     //TODO: Update option panel values
 }
 
-#define VARIANCE 1
-
-void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText)
+void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText,Parser* parser,float variance)
 {
     if (!points)
         return;
@@ -231,21 +229,36 @@ void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText)
     //x Axis:
     PointBinaryTreeSort sort;
     std::list<Point*> sortedPoints = sort.SortPointsXAxis(points);
-
-    for (std::list<Point*>::iterator itr = sortedPoints.begin();itr != --sortedPoints.end();)
-    {   
-        
-        if ((*itr)->x - (*(++itr))->x < VARIANCE && (*(--itr))->y - (*(++itr))->y < VARIANCE)
-        {
-            --itr;
-            itr = sortedPoints.erase(itr);
-        }
-    }
+    std::vector<Point> singlePoints;
 
     int size = sortedPoints.size();
 
+    for (std::list<Point*>::iterator itr = sortedPoints.begin();itr != --sortedPoints.end();)
+    {   
+
+        float firstValueX = (*itr)->x;
+        float firstValueY = (*itr)->y;
+        float secondValueX = (*++itr)->x;
+        float secondValueY = (*itr)->y;
+
+        if (abs(firstValueX - secondValueX) < variance && abs(firstValueY - secondValueY) < variance)
+        {
+            itr = sortedPoints.erase(itr);
+            --itr;
+        }
+    }
+
+    
+    size = sortedPoints.size();
+
+    for (auto &i : sortedPoints)
+        singlePoints.push_back(*i);
+
     parent->SetStatusText("Removed duplicated points!");
-    nmbPointsText->SetLabel(std::to_string(sortedPoints.size()));
+    nmbPointsText->SetLabel(std::to_string(singlePoints.size()));
+
+    //Refresh();
+    parser->SetPoints(&singlePoints);
 
     return;
 }

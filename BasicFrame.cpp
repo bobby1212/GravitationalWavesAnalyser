@@ -50,7 +50,7 @@ bool BasicFrame::CreatePanels()
 
     removeDuplicatesSizer = new wxBoxSizer(wxHORIZONTAL);
     removeDuplicatesButton = new wxButton(panelOptions, ID_OPTION_REMOVE_DUPLICATES, "Remove duplicates");
-    removeDuplicateGauge = new wxGauge(panelOptions, wxID_ANY, 100,wxDefaultPosition,wxSize(100,25),wxGA_HORIZONTAL | wxGA_SMOOTH);
+    removeDuplicatesVariance = new wxTextCtrl(panelOptions, ID_OPTION_REMOVE_DUPLICATES_VARIANCE, "1.0", wxDefaultPosition, wxDefaultSize, wxTE_CENTER);
 
     triangulateSizer = new wxBoxSizer(wxHORIZONTAL);
     triangulateButton = new wxButton(panelOptions, ID_OPTION_TRIANGULATE, "Triangulate");
@@ -78,7 +78,7 @@ bool BasicFrame::CreatePanels()
     minHeightSizer->Add(minHeight, wxALIGN_CENTER | wxEXPAND);
 
     removeDuplicatesSizer->Add(removeDuplicatesButton, wxEXPAND);
-    removeDuplicatesSizer->Add(removeDuplicateGauge, wxEXPAND);
+    removeDuplicatesSizer->Add(removeDuplicatesVariance, wxEXPAND);
 
     triangulateSizer->Add(triangulateButton, wxEXPAND);
     triangulateSizer->Add(triangulateGauge, wxEXPAND);
@@ -137,6 +137,7 @@ EVT_TEXT_ENTER(ID_OPTION_DIVISOR, BasicFrame::setDivisor)
 EVT_TEXT_ENTER(ID_OPTION_MAX_HEIGHT, BasicFrame::setMaxHeight)
 EVT_TEXT_ENTER(ID_OPTION_MIN_HEIGHT, BasicFrame::setMinHeight)
 EVT_BUTTON(ID_OPTION_REMOVE_DUPLICATES, BasicFrame::removeDuplicates)
+EVT_BUTTON(ID_OPTION_TRIANGULATE, BasicFrame::triangulatePoints)
 EVT_TEXT_ENTER(ID_OPTION_MIN_RADIUS, BasicFrame::setMinRadius)
 EVT_TEXT_ENTER(ID_OPTION_MAX_RADIUS, BasicFrame::setMaxRadius)
 EVT_MENU(ID_FILE_OPEN, BasicFrame::OnFileOpen)
@@ -252,12 +253,12 @@ void BasicFrame::removeDuplicates(wxCommandEvent& event)
 { 
     try
     {
-        std::thread t1(&Render::removeDuplicates, panelRender, 0.5f, nmbPoints);
+        std::thread t1(&Render::removeDuplicates, panelRender, 0.5f, nmbPoints, parser, boost::lexical_cast<float>(removeDuplicatesVariance->GetValue()));
         t1.detach();
     }
-    catch (...)
+    catch (boost::bad_lexical_cast)
     {
-        SetStatusText("remove Duplicates");
+        errorHandler->DisplayError(ERROR_NAN);
     }
     return;
 }
@@ -267,10 +268,12 @@ void BasicFrame::triangulatePoints(wxCommandEvent & event)
 
     Triangulation tri;
 
-    tri.SetPoints(parser);  
-
+    tri.SetPoints(parser);
+    
     if (tri.Triangulate())
         panelRender->setTriangles(tri.GetTriangles());
+    else
+        errorHandler->DisplayError("Something went wrong at triangulation!");
 
 }
 

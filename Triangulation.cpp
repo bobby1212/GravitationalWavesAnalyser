@@ -2,7 +2,7 @@
 
 
 
-Triangulation::Triangulation()
+Triangulation::Triangulation(ErrorHandler* _errorHandler) : errorHandler(_errorHandler)
 {
 	timeBegin = clock();
 	triangleMatrix.resize(4);
@@ -17,16 +17,16 @@ Triangulation::~Triangulation()
 void Triangulation::SetPoints(Parser* parser)
 {
     ppoints = parser->GetPoints();
-
+	points.clear();
     points.push_back(Point(parser->GetMinX(), parser->GetMinY()));
     points.push_back(Point(parser->GetMaxX(), parser->GetMinY()));
     points.push_back(Point(parser->GetMaxX(), parser->GetMaxY()));
     points.push_back(Point(parser->GetMinX(), parser->GetMaxY()));
-
+	triangles.clear();
     return;
 }
 
-bool Triangulation::Triangulate()
+void Triangulation::Triangulate(wxGauge* progressGauge,Render* render)
 {
     //Make initial triangles
     auto T1 = std::make_shared<Triangle>(3, 1, 0);
@@ -45,9 +45,12 @@ bool Triangulation::Triangulate()
     triangles.push_back(T1);
     triangles.push_back(T2);
 
+	progressGauge->SetRange(ppoints->size());
+	int actualProgress = 0;
+
     //cout << "Progress: " << endl;
     for (auto &point : *ppoints)
-    {
+	{
         //++i;
         //cerr << "\r" << (float)i / (float)ppoints->size() * 100.0f << "%";
         points.push_back(point);
@@ -65,9 +68,8 @@ bool Triangulation::Triangulate()
         if (illegal_triangles.size() == 0)
         {
             //cerr << "No illegal triangles! Point: " << point << endl;
-            points.pop_back();
-            continue;
-            return false;
+			errorHandler->DisplayError(ERROR_TRIANGULATION_NO_ILLEGAL_TRIANGLE);
+            return;
         }
         //cout << "Illegal triangles:" << endl;
         //for (auto &i : illegal_triangles)
@@ -220,11 +222,8 @@ bool Triangulation::Triangulate()
                 //cerr << points[T->p1] << " " << points[T->p2] << " " << points[T->p3] << endl;
                 //cout << "Found!" << endl;
                 //cout << points[T->p1] << " " << points[T->p2] << " " << points[T->p3] << endl;
-                points.pop_back();
-                //triangles->swap(newTriangles);
-                //cin.get();
-                return false;
-                break;
+				errorHandler->DisplayError(ERROR_TRIANGULATION_EQUAL_POINTS);
+				return;
             }
 
             if (!edge.triangle)
@@ -289,6 +288,8 @@ bool Triangulation::Triangulate()
 
         illegal_triangles.clear();
         boundary.clear();
+
+		progressGauge->SetValue(++actualProgress);
     }
 
 	ppoints->insert(ppoints->begin(), points[3]);
@@ -296,5 +297,8 @@ bool Triangulation::Triangulate()
 	ppoints->insert(ppoints->begin(), points[1]);
 	ppoints->insert(ppoints->begin(), points[0]);
 
-    return true;
+	render->setTriangles(triangles);
+	render->Refresh();
+
+    return;
 }

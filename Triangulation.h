@@ -2,14 +2,15 @@
 #include "SharedDefines.h"
 #include "GeometryDefines.h"
 #include "Parser.h"
+#include "Render.h"
 
 class Triangulation
 {
 public:
-	Triangulation();
+	Triangulation(ErrorHandler* errorHandler);
 	~Triangulation();
 	void SetPoints(Parser*);
-	bool Triangulate();
+	void Triangulate(wxGauge* progressGauge,Render* render);
 	std::vector<pTriangle> GetTriangles() { return triangles; }
 private:
 	clock_t timeBegin;
@@ -21,4 +22,5 @@ private:
 	pTriangle T1;
 	pTriangle T2;
 	std::vector<pTriangle> triangles;
+	ErrorHandler* errorHandler;
 };

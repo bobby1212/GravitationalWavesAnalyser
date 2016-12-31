@@ -275,15 +275,11 @@ void BasicFrame::removeDuplicates(wxCommandEvent& event)
 void BasicFrame::triangulatePoints(wxCommandEvent & event)
 {
 
-    Triangulation tri;
-
+    Triangulation tri(errorHandler);
     tri.SetPoints(parser);
-    
-    if (tri.Triangulate())
-        panelRender->setTriangles(tri.GetTriangles());
-    else
-        errorHandler->DisplayError("Something went wrong at triangulation!");
 
+	std::thread t2(&Triangulation::Triangulate, tri, triangulateGauge, panelRender);
+	t2.detach();
 }
 
 void BasicFrame::generatePoints(wxCommandEvent & event)
@@ -293,7 +289,8 @@ void BasicFrame::generatePoints(wxCommandEvent & event)
         parser = new Parser(this);
 
         parser->generatePoints(boost::lexical_cast<int>(generatePointsCount->GetValue()),clock());
-        panelRender->setPoints(parser->GetPoints());
+		panelRender->Reset();
+		panelRender->setPoints(parser->GetPoints());
         panelRender->calcValues();
         panelRender->Refresh();
     }

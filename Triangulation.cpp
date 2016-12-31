@@ -252,7 +252,7 @@ bool Triangulation::Triangulate()
             {
                 T->n2->setEdge(&edge, T, &points);
             }
-            else
+            //else
                 //cout << "No neighbour!" << endl;
 
             //cout << "New triangle: ";
@@ -290,6 +290,11 @@ bool Triangulation::Triangulate()
         illegal_triangles.clear();
         boundary.clear();
     }
+
+	ppoints->insert(ppoints->begin(), points[3]);
+	ppoints->insert(ppoints->begin(), points[2]);
+	ppoints->insert(ppoints->begin(), points[1]);
+	ppoints->insert(ppoints->begin(), points[0]);
 
     return true;
 }

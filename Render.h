@@ -11,6 +11,7 @@ class Render : public wxGLCanvas
 public:
 	Render(wxFrame* parent, int* args, int height, int width, int positionX);
 	~Render();
+	void Reset();
 	void setPoints(std::vector<Point>*);
 	void setTriangles(std::vector<pTriangle>);
 	void Init();

@@ -48,6 +48,13 @@ Render::~Render()
     delete glContext;
 }
 
+void Render::Reset()
+{
+	if(points)
+		points->clear();
+	triangles.clear();
+}
+
 void Render::setPoints(std::vector<Point>* _points)
 {
     points = _points;

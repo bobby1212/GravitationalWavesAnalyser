@@ -39,6 +39,8 @@ Render::Render(wxFrame* _parent, int* args, int height, int width, int positionX
     minHeight = -10000.0f;
     minRadius = 0.0f;
     maxRadius = 10000.0f;
+
+	points = nullptr;
 }
 
 Render::~Render()
@@ -108,7 +110,7 @@ void Render::render(wxPaintEvent& evt)
         {
             /*
             Little problem here:
-            The height of the gravitationwaves in the asc file ist the z-Value but here it must be the y-Value
+            The height of the gravitationwaves in the asc file is the z-Value but here it must be the y-Value
             */
             //Render conditions (Normally set in option panel)
             radius = distance(Point(0, 0, 0), i);

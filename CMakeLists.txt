@@ -7,7 +7,7 @@ project(GravWaves)
 
 find_package(wxWidgets COMPONENTS core base gl)
 
-set(Boost_USE_STATIC_LIBS OFF) 
+set(Boost_USE_STATIC_LIBS ON) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
 find_package(Boost 1.45.0 COMPONENTS iostreams random REQUIRED)
@@ -21,7 +21,7 @@ set(SOURCE
 	Parser.cpp
 	Render.cpp
 	Triangulation.cpp
-	PointBinaryTreeSort.h
+	PointBinaryTreeSort.cpp
 )
 
 set(HEADER
@@ -38,6 +38,7 @@ set(HEADER
 )
 
 include_directories(${Boost_INCLUDE_DIRS} ${wxWidgets_INCLUDE_DIRS})
+link_directories(${BOOST_LIBRARY_DIR})
 
 add_executable(	${PROJECT_NAME}
 				${SOURCE}
@@ -46,7 +47,7 @@ add_executable(	${PROJECT_NAME}
 
 target_link_libraries(	${PROJECT_NAME}
 						${wxWidgets_LIBRARIES}
-						${Boost_LIBRARY}
+						${Boost_LIBRARIES}
  )
  
  if(WIN32)

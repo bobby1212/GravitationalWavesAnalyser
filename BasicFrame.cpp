@@ -127,6 +127,7 @@ bool BasicFrame::CreateMenu()
     editMenu->Append(ID_EDIT_NOTHING, "Platzhalter");
 
     exportMenu->Append(ID_EXPORT_HEIGHTMAP, "Export heightmap");
+	exportMenu->Append(ID_EXPORT_STL, "Export Stl");
 
     infoMenu->Append(ID_INFO_ABOUT, "About");
 
@@ -151,6 +152,7 @@ EVT_TEXT_ENTER(ID_OPTION_MIN_RADIUS, BasicFrame::setMinRadius)
 EVT_TEXT_ENTER(ID_OPTION_MAX_RADIUS, BasicFrame::setMaxRadius)
 EVT_MENU(ID_FILE_OPEN, BasicFrame::OnFileOpen)
 EVT_MENU(ID_EXPORT_HEIGHTMAP, BasicFrame::OnExportHeightmap)
+EVT_MENU(ID_EXPORT_STL, BasicFrame::OnExportStl)
 
 END_EVENT_TABLE()
 //Render events
@@ -192,6 +194,18 @@ void BasicFrame::OnExportHeightmap(wxCommandEvent & event)
     else
         errorHandler->DisplayError("Couldn't export file because no points are loaded");
     return;
+}
+
+void BasicFrame::OnExportStl(wxCommandEvent & event)
+{
+	if (parser)
+	{
+		StlExporter exporter(errorHandler);
+		if (exporter.ExportStl("out.stl", panelRender->GetTriangles(), parser->GetPoints()))
+			SetStatusText("Export successful");
+		else
+			SetStatusText("Error at exporting file!");
+	}
 }
 
 void BasicFrame::setHeightDivisor(wxCommandEvent &e)

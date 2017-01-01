@@ -5,6 +5,7 @@
 #include "ErrorHandler.h"
 #include "HeightmapExporter.h"
 #include "Triangulation.h"
+#include "StlExporter.h"
 
 class BasicFrame : public wxFrame
 {
@@ -15,6 +16,7 @@ public:
 	//Event handler
 	void OnFileOpen(wxCommandEvent& event);
     void OnExportHeightmap(wxCommandEvent& event);
+	void OnExportStl(wxCommandEvent& event);
 	void setHeightDivisor(wxCommandEvent& event);
 	void setDivisor(wxCommandEvent& event);
     void setMaxHeight(wxCommandEvent& event);

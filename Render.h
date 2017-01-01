@@ -38,6 +38,7 @@ public:
     double getMinHeight() { return minHeight; }
     double getMaxRadius() { return maxRadius; }
     double getMinRadius() { return minRadius; }
+	std::vector<pTriangle> GetTriangles() { return triangles; }
 
 private:
 	ErrorHandler* errorHandler;

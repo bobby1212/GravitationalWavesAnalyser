@@ -63,7 +63,6 @@ void Parser::parseBinFile()
 			pointStore[actualItr].push_back(tempPoint);
 		}
     }
-    tempFloat = 0.0f;
     return;
 }
 

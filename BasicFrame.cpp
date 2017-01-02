@@ -65,6 +65,8 @@ bool BasicFrame::CreatePanels()
     maxRadius = new wxTextCtrl(panelOptions,ID_OPTION_MAX_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
     minRadius = new wxTextCtrl(panelOptions, ID_OPTION_MIN_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
 
+	iterationSlider = new wxSlider(panelOptions, ID_OPTION_ITERATION, 0, 0, 1, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_MIN_MAX_LABELS | wxSL_AUTOTICKS | wxSL_VALUE_LABEL);
+
     //Set the sizers
     nmbPointSizer->Add(nmbPointsText, wxEXPAND);
     nmbPointSizer->Add(nmbPoints, wxALIGN_CENTER | wxEXPAND);
@@ -103,6 +105,7 @@ bool BasicFrame::CreatePanels()
     optionsSizer->Add(triangulateSizer, 0, wxEXPAND);
     optionsSizer->Add(generatePointsSizer, 0, wxEXPAND);
     optionsSizer->Add(radiusOptionSizer, 0, wxEXPAND);
+	optionsSizer->Add(iterationSlider, 0, wxEXPAND);
 
     panelOptions->SetSizer(optionsSizer);
     panelOptions->SetAutoLayout(true);
@@ -150,6 +153,7 @@ EVT_BUTTON(ID_OPTION_TRIANGULATE, BasicFrame::triangulatePoints)
 EVT_BUTTON(ID_OPTION_GENERATE_POINTS, BasicFrame::generatePoints)
 EVT_TEXT_ENTER(ID_OPTION_MIN_RADIUS, BasicFrame::setMinRadius)
 EVT_TEXT_ENTER(ID_OPTION_MAX_RADIUS, BasicFrame::setMaxRadius)
+EVT_SCROLL_CHANGED(BasicFrame::SetIteration)
 EVT_MENU(ID_FILE_OPEN, BasicFrame::OnFileOpen)
 EVT_MENU(ID_EXPORT_HEIGHTMAP, BasicFrame::OnExportHeightmap)
 EVT_MENU(ID_EXPORT_STL, BasicFrame::OnExportStl)
@@ -172,6 +176,7 @@ void BasicFrame::OnFileOpen(wxCommandEvent &event)
     parser = new Parser(this);
     parser->openBin(std::string(dialog->GetPath()));
     parser->parseBinFile();
+	UpdateIterationRange();
     panelRender->setPoints(parser->GetPoints());
     
     //Set nmb of point in text box
@@ -344,6 +349,25 @@ void BasicFrame::setMaxRadius(wxCommandEvent & event)
     {
         errorHandler->DisplayError(ERROR_NAN);
     }
+}
+
+void BasicFrame::SetIteration(wxScrollEvent & event)
+{
+	switch (event.GetId())
+	{
+	case ID_OPTION_ITERATION:
+		panelRender->SetIteration(event.GetPosition());
+		panelRender->Refresh();
+		break;
+	}
+}
+
+void BasicFrame::UpdateIterationRange()
+{
+	if (parser)
+	{
+		iterationSlider->SetMax(parser->GetPoints()->size());
+	}
 }
 
 void BasicFrame::updateNmbPoints(int _nmbPoints)

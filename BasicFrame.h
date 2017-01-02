@@ -26,6 +26,9 @@ public:
     void generatePoints(wxCommandEvent& event);
     void setMinRadius(wxCommandEvent& event);
     void setMaxRadius(wxCommandEvent& event);
+	void SetIteration(wxScrollEvent& event);
+
+	void UpdateIterationRange();
 
 	ErrorHandler* GetErrorHandler() { return errorHandler; }
 
@@ -84,6 +87,8 @@ private:
     wxTextCtrl* maxRadius;
     wxTextCtrl* minRadius;
     wxStaticText* radiusOption;
+
+	wxSlider* iterationSlider;
 
 	int height, width;
 	Parser* parser;

@@ -29,6 +29,7 @@ public:
     void removeDuplicates(double radius,wxStaticBox* nmbPointsText, Parser* parser, float variance);
     void setMinRadius(double _radius) { minRadius = _radius; }
     void setMaxRadius(double _radius) { maxRadius = _radius; }
+	void SetIteration(int itr) { actualItr = itr; }
 
 	//Input handlers
 	void OnKeyDown(wxKeyEvent& event);

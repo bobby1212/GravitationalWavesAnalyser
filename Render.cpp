@@ -12,7 +12,7 @@ Render::Render(wxFrame* _parent, int* args, int height, int width, int positionX
     glContext = new wxGLContext(this);
     SetBackgroundStyle(wxBG_STYLE_PAINT);
     Init();
-    //basicParent = _basicParent;
+	actualItr = 0;
 
     rotationSpeed = 1.05f;
     translationSpeed = 0.05f;
@@ -55,7 +55,7 @@ void Render::Reset()
 	triangles.clear();
 }
 
-void Render::setPoints(std::vector<Point>* _points)
+void Render::setPoints(std::map<int, std::vector<Point>>* _points)
 {
     points = _points;
     calcValues();
@@ -107,13 +107,13 @@ void Render::render(wxPaintEvent& evt)
     glColor3f(0.0f, 0.0f, 1.0f);
     if (renderPoints && points)
     {
-        if (points->size() == 1)
+        if ((*points)[actualItr].size() == 1)
             errorHandler->DisplayError(ERROR_ONE_POINT);
 
         float radius = 0.0f;
         
         glBegin(GL_POINTS);
-        for (auto &i : *points)
+        for (auto &i : (*points)[actualItr])
         {
             /*
             Little problem here:
@@ -134,22 +134,22 @@ void Render::render(wxPaintEvent& evt)
         {
             glColor3f(1.0f, 1.0f, 1.0f);
             glBegin(GL_TRIANGLES);
-            glVertex3f(((*points)[i->p1].x + offsetX) / divisor, ((*points)[i->p1].y + offsetY) / divisor, ((*points)[i->p1].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[i->p2].x + offsetX) / divisor, ((*points)[i->p2].y + offsetY) / divisor, ((*points)[i->p2].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[i->p3].x + offsetX) / divisor, ((*points)[i->p3].y + offsetY) / divisor, ((*points)[i->p3].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p1].x + offsetX) / divisor, ((*points)[actualItr][i->p1].y + offsetY) / divisor, ((*points)[actualItr][i->p1].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p2].x + offsetX) / divisor, ((*points)[actualItr][i->p2].y + offsetY) / divisor, ((*points)[actualItr][i->p2].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p3].x + offsetX) / divisor, ((*points)[actualItr][i->p3].y + offsetY) / divisor, ((*points)[actualItr][i->p3].z - offsetZ) / heightDivisor);
             glEnd();
             glColor3f(0.0f, 1.0f, 0.0f);
             glBegin(GL_LINES);
-            glVertex3f(((*points)[i->p1].x + offsetX) / divisor, ((*points)[i->p1].y + offsetY) / divisor, ((*points)[i->p1].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[i->p2].x + offsetX) / divisor, ((*points)[i->p2].y + offsetY) / divisor, ((*points)[i->p2].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p1].x + offsetX) / divisor, ((*points)[actualItr][i->p1].y + offsetY) / divisor, ((*points)[actualItr][i->p1].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p2].x + offsetX) / divisor, ((*points)[actualItr][i->p2].y + offsetY) / divisor, ((*points)[actualItr][i->p2].z - offsetZ) / heightDivisor);
             glEnd();
             glBegin(GL_LINES);
-            glVertex3f(((*points)[i->p2].x + offsetX) / divisor, ((*points)[i->p2].y + offsetY) / divisor, ((*points)[i->p2].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[i->p3].x + offsetX) / divisor, ((*points)[i->p3].y + offsetY) / divisor, ((*points)[i->p3].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p2].x + offsetX) / divisor, ((*points)[actualItr][i->p2].y + offsetY) / divisor, ((*points)[actualItr][i->p2].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p3].x + offsetX) / divisor, ((*points)[actualItr][i->p3].y + offsetY) / divisor, ((*points)[actualItr][i->p3].z - offsetZ) / heightDivisor);
             glEnd();
             glBegin(GL_LINES);
-            glVertex3f(((*points)[i->p3].x + offsetX) / divisor, ((*points)[i->p3].y + offsetY) / divisor, ((*points)[i->p3].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[i->p1].x + offsetX) / divisor, ((*points)[i->p1].y + offsetY) / divisor, ((*points)[i->p1].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p3].x + offsetX) / divisor, ((*points)[actualItr][i->p3].y + offsetY) / divisor, ((*points)[actualItr][i->p3].z - offsetZ) / heightDivisor);
+            glVertex3f(((*points)[actualItr][i->p1].x + offsetX) / divisor, ((*points)[actualItr][i->p1].y + offsetY) / divisor, ((*points)[actualItr][i->p1].z - offsetZ) / heightDivisor);
             glEnd();
         }
     }
@@ -198,7 +198,7 @@ void Render::OnKeyDown(wxKeyEvent & event)
 void Render::calcValues()
 {
     float radius = 0.0f;
-    for (auto &i : *points)
+    for (auto &i : (*points)[actualItr])
     {
         radius = distance(Point(0, 0, 0), i);
         if (i.z - offsetZ < maxHeight && i.z - offsetZ > minHeight && radius < maxRadius && radius > minRadius)
@@ -237,7 +237,7 @@ void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText,Parser* 
     //First sort the points
     //x Axis:
     PointBinaryTreeSort sort;
-    std::list<Point*> sortedPoints = sort.SortPointsXAxis(points);
+    std::list<Point*> sortedPoints = sort.SortPointsXAxis(&(*points)[actualItr]);
     std::vector<Point> singlePoints;
 
     int size = sortedPoints.size();
@@ -267,7 +267,7 @@ void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText,Parser* 
     nmbPointsText->SetLabel(std::to_string(singlePoints.size()));
 
     //Refresh();
-    parser->SetPoints(&singlePoints);
+    parser->SetPoints(actualItr,&singlePoints);
 
     return;
 }

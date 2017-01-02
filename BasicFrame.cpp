@@ -175,7 +175,7 @@ void BasicFrame::OnFileOpen(wxCommandEvent &event)
     panelRender->setPoints(parser->GetPoints());
     
     //Set nmb of point in text box
-    nmbPoints->SetLabel(std::to_string(parser->GetPointsCount()));
+    nmbPoints->SetLabel(std::to_string(parser->GetPointsCount(0)));
 
     panelRender->activateRenderPoints(true);
     Refresh();
@@ -185,7 +185,7 @@ void BasicFrame::OnExportHeightmap(wxCommandEvent & event)
 {
     if (parser)
     {
-        HeightmapExporter exporter(parser->GetPoints());
+        HeightmapExporter exporter(parser->GetPoints(0));
         if (!exporter.exportHeightmap("out.hm", panelRender->GetMaxHeight(), panelRender->getMinHeight(), panelRender->getMinRadius(), panelRender->getMaxRadius()))
             errorHandler->DisplayError("Error at exporting file");
         else
@@ -201,7 +201,7 @@ void BasicFrame::OnExportStl(wxCommandEvent & event)
 	if (parser)
 	{
 		StlExporter exporter(errorHandler);
-		if (exporter.ExportStl("out.stl", panelRender->GetTriangles(), parser->GetPoints()))
+		if (exporter.ExportStl("out.stl", panelRender->GetTriangles(), parser->GetPoints(0)))
 			SetStatusText("Export successful");
 		else
 			SetStatusText("Error at exporting file!");

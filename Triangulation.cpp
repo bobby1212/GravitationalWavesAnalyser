@@ -16,7 +16,7 @@ Triangulation::~Triangulation()
 
 void Triangulation::SetPoints(Parser* parser)
 {
-    ppoints = parser->GetPoints();
+    ppoints = parser->GetPoints(0);
 	points.clear();
     points.push_back(Point(parser->GetMinX(), parser->GetMinY()));
     points.push_back(Point(parser->GetMaxX(), parser->GetMinY()));

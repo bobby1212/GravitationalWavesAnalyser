@@ -10,18 +10,17 @@ public:
 	~Parser();
 	void openASCII(std::string file);
     void openBin(std::string file);
-	void parseASCIIFile();
     void parseBinFile();
-	void reducePoints(int nmbPoints);
 	double GetMaxX() { return maxX; }
 	double GetMaxY() { return maxY; }
 	double GetMaxZ() { return maxZ; }
 	double GetMinX() { return minX; }
 	double GetMinY() { return minY; }
 	double GetMinZ() { return minZ; }
-	std::vector<Point>* GetPoints() { return &points; }
-    void SetPoints(std::vector<Point>* _points) { points = *_points; }
-    int GetPointsCount() { return points.size(); }
+	std::map<int, std::vector<Point>>* GetPoints() { return &pointStore; }
+	std::vector<Point>* GetPoints(int itr) { return &pointStore[itr]; }
+    void SetPoints(int actualItr, std::vector<Point>* _points) { pointStore[actualItr] = *_points; }
+	int GetPointsCount(int itr) { return pointStore[itr].size(); }
     void generatePoints(int count, int seed);
 private:
 	std::string file;
@@ -36,7 +35,7 @@ private:
 	double minX, maxX, minY, maxY, minZ, maxZ;
 	double rangeMin, rangeMax;
 
-	std::vector<Point> points;
+	std::map<int,std::vector<Point>> pointStore;
 
 	wxWindow* parent;
 	ErrorHandler* errorHandler;

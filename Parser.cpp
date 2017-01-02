@@ -33,132 +33,38 @@ void Parser::openBin(std::string file)
     return;
 }
 
-void Parser::parseASCIIFile()
-{
-	if (!fileStream.is_open())
-		return;
-
-	int i = 0;
-
-	auto f = fileStream.const_data();
-	auto l = f + fileStream.size();
-
-	boost::char_separator<char> sep(" ");
-	boost::char_separator<char> sepLine("\n");
-
-	streamBuffer.assign(f);
-	boost::tokenizer<boost::char_separator<char>> tokLine(streamBuffer, sepLine);
-
-	for (boost::tokenizer<boost::char_separator<char>>::iterator lineItr = tokLine.begin(); lineItr != tokLine.end(); lineItr++)
-	{
-		i++;
-		if (i % 5 != 0)
-			continue;
-
-		buffer.assign(*lineItr);
-
-		if (buffer.size() == 0 || buffer[0] == '#' || buffer[0] == '\r')
-			continue;
-
-		while (buffer[buffer.size() - 1] == '\r')
-			buffer.pop_back();
-		
-
-		boost::tokenizer<boost::char_separator<char>> tok(buffer, sep);
-		boost::tokenizer<boost::char_separator<char>>::iterator itr = tok.begin();
-
-		int size = itr->size();
-
-		try
-		{
-			tempPoint.x = boost::lexical_cast<double>(*itr);
-			tempPoint.y = boost::lexical_cast<double>(*++itr);
-			tempPoint.z = boost::lexical_cast<double>(*++itr);
-		}
-		catch (boost::bad_lexical_cast &e)
-		{
-			errorHandler->DisplayError("Something's wrong with the input file!");
-			return;
-		}
-
-		tempPoint.x = floorf(tempPoint.x * 100 + 0.0) / 100;
-		tempPoint.y = floorf(tempPoint.y * 100 + 0.0) / 100;
-		tempPoint.z = floorf(tempPoint.z * 100 + 0.0) / 100;
-
-		for (auto &i : points)
-		{
-			if (i == tempPoint)
-				continueLoop = true;
-		}
-
-		if (continueLoop)
-			continue;
-
-		points.push_back(tempPoint);
-	}
-
-
-	/*double dist = distance(origin, tempPoint);
-	if (dist > 150 || dist < 15)
-		continue;
-
-	i<f (tempPoint.x > maxX)
-		maxX = tempPoint.x;
-	if (tempPoint.x < minX)
-		minX = tempPoint.x;
-	if (tempPoint.y > maxY)
-		maxY = tempPoint.y;
-	if (tempPoint.y < minY)
-		minY = tempPoint.y;
-	if (tempPoint.z > maxZ)
-		maxZ = tempPoint.z;
-	if (tempPoint.z < minZ)
-		minZ = tempPoint.z;
-	*/
-
-	maxX += 10;
-	maxY += 10;
-	minX -= 10;
-	minY -= 10;
-}
-
 void Parser::parseBinFile()
 {
     char* header = new char[80];
     inputStreamBinary.read(header, 80);
     float tempFloat = 0.0f;
+	int actualItr = 0;
+	int nmbPoints = 0;
 
     while (inputStreamBinary.peek() != EOF)
     {
-        tempPoint = Point();
-        tempFloat = 0.0f;
-        inputStreamBinary.read((char*)&tempFloat, sizeof(float));
-        tempPoint.x = tempFloat;
+		inputStreamBinary.read((char*)&nmbPoints, sizeof(int));
+		inputStreamBinary.read((char*)&actualItr, sizeof(int));
+		for (; nmbPoints != 0; nmbPoints--)
+		{
+			tempPoint = Point();
+			tempFloat = 0.0f;
+			inputStreamBinary.read((char*)&tempFloat, sizeof(float));
+			tempPoint.x = tempFloat;
 
-        tempFloat = 0.0f;
-        inputStreamBinary.read((char*)&tempFloat, sizeof(float));
-        tempPoint.z = tempFloat;
+			tempFloat = 0.0f;
+			inputStreamBinary.read((char*)&tempFloat, sizeof(float));
+			tempPoint.z = tempFloat;
 
-        tempFloat = 0.0f;
-        inputStreamBinary.read((char*)&tempFloat, sizeof(float));
-        tempPoint.y = tempFloat;
-        
+			tempFloat = 0.0f;
+			inputStreamBinary.read((char*)&tempFloat, sizeof(float));
+			tempPoint.y = tempFloat;
 
-        points.push_back(tempPoint);
+			pointStore[actualItr].push_back(tempPoint);
+		}
     }
     tempFloat = 0.0f;
     return;
-}
-
-void Parser::reducePoints(int nmbPoints)
-{
-	boost::minstd_rand generator(time(0));
-	while (points.size() > nmbPoints)
-	{
-		boost::uniform_int<> uni_dist(0, points.size() - 1);
-		boost::variate_generator<boost::minstd_rand&, boost::uniform_int<>> uni(generator, uni_dist);
-		points.erase(points.begin() + uni());
-	}
 }
 
 void Parser::generatePoints(int count,int seed)
@@ -173,9 +79,9 @@ void Parser::generatePoints(int count,int seed)
     boost::uniform_real<> uni_dist_height(0, 2);
     boost::variate_generator<base_generator_type&, boost::uniform_real<>> uni_height(generator, uni_dist_height);
     
-    points.clear();
+	pointStore.clear();
 
-    while (points.size() != count)
+    while (pointStore[0].size() != count)
     {
         double x = uni();
         double y = uni();
@@ -183,12 +89,12 @@ void Parser::generatePoints(int count,int seed)
         newPoint.x = x;
         newPoint.y = y;
         newPoint.z = uni_height();
-        while (std::find(points.begin(), points.end(),newPoint) != points.end())
+        while (std::find(pointStore[0].begin(), pointStore[0].end(),newPoint) != pointStore[0].end())
         {
             newPoint.x = uni();
             newPoint.y = uni();
         }
-        points.push_back(newPoint);
+		pointStore[0].push_back(newPoint);
     }
 }
 

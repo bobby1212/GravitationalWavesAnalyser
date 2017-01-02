@@ -54,11 +54,11 @@ void Parser::parseBinFile()
 
 			tempFloat = 0.0f;
 			inputStreamBinary.read((char*)&tempFloat, sizeof(float));
-			tempPoint.z = tempFloat;
+			tempPoint.y = tempFloat;
 
 			tempFloat = 0.0f;
 			inputStreamBinary.read((char*)&tempFloat, sizeof(float));
-			tempPoint.y = tempFloat;
+			tempPoint.z = tempFloat;
 
 			pointStore[actualItr].push_back(tempPoint);
 		}

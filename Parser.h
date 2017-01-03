@@ -8,7 +8,6 @@ class Parser
 public:
 	Parser(wxWindow* parent);
 	~Parser();
-	void openASCII(std::string file);
     void openBin(std::string file);
     void parseBinFile();
 	double GetMaxX() { return maxX; }
@@ -24,11 +23,7 @@ public:
     void generatePoints(int count, int seed);
 private:
 	std::string file;
-	boost::iostreams::mapped_file fileStream;
     std::ifstream inputStreamBinary;
-	std::string streamBuffer;
-	std::string buffer;
-	bool continueLoop;
 
 	Point origin;
 	Point tempPoint;

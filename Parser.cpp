@@ -2,7 +2,6 @@
 
 Parser::Parser(wxWindow* parent) :
 	origin(Point(0, 0)),
-	continueLoop(false),
 	minX(10000.0f),
 	maxX(-10000.0f),
 	minY(10000.0f),
@@ -15,14 +14,6 @@ Parser::Parser(wxWindow* parent) :
 
 Parser::~Parser()
 {
-}
-
-void Parser::openASCII(std::string file)
-{
-	fileStream.open(file, boost::iostreams::mapped_file::readonly);
-
-	if (fileStream.is_open())
-		return;
 }
 
 void Parser::openBin(std::string file)

@@ -4,17 +4,17 @@
 class Triangle;
 
 typedef std::shared_ptr<Triangle> pTriangle;
-typedef std::vector<std::vector<double>> matrix;
+typedef std::vector<std::vector<float>> matrix;
 
 struct Point
 {
-	double x;
-	double y;
-	double z;
+	float x;
+	float y;
+	float z;
 
 	Point() : x(0), y(0), z(0) {}
-	Point(double x, double y) : x(x), y(y), z(0) {}
-	Point(double x, double y, double z) : x(x), y(y), z(z) {}
+	Point(float x, float y) : x(x), y(y), z(0) {}
+	Point(float x, float y, float z) : x(x), y(y), z(z) {}
 
 	void normalize()
 	{

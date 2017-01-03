@@ -31,28 +31,36 @@ void Parser::parseBinFile()
     float tempFloat = 0.0f;
 	int actualItr = 0;
 	int nmbPoints = 0;
+	byte* buffer = new byte;
 
     while (inputStreamBinary.peek() != EOF)
     {
 		inputStreamBinary.read((char*)&nmbPoints, sizeof(int));
 		inputStreamBinary.read((char*)&actualItr, sizeof(int));
-		for (; nmbPoints != 0; nmbPoints--)
+
+		int size = nmbPoints * 3 * 4;
+		if (size)
 		{
-			tempPoint = Point();
-			tempFloat = 0.0f;
-			inputStreamBinary.read((char*)&tempFloat, sizeof(float));
+			buffer = new byte[size]; //Per point 3 values which are 4 bytes
+			inputStreamBinary.read((char*)buffer, size);
+		}
+
+		for (int i = 0; nmbPoints != 0; nmbPoints--)
+		{
+			memcpy(&tempFloat, buffer + i * 12, 4);
 			tempPoint.x = tempFloat;
 
-			tempFloat = 0.0f;
-			inputStreamBinary.read((char*)&tempFloat, sizeof(float));
+			memcpy(&tempFloat, buffer + i * 12 + 4, 4);
 			tempPoint.y = tempFloat;
 
-			tempFloat = 0.0f;
-			inputStreamBinary.read((char*)&tempFloat, sizeof(float));
+			memcpy(&tempFloat, buffer + i * 12 + 8, 4);
 			tempPoint.z = tempFloat;
 
 			pointStore[actualItr].push_back(tempPoint);
+			++i;
 		}
+
+		delete buffer;
     }
     return;
 }

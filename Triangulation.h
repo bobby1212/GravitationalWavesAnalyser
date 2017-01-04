@@ -7,9 +7,10 @@
 class Triangulation
 {
 public:
+	Triangulation() { };
 	Triangulation(ErrorHandler* errorHandler);
 	~Triangulation();
-	void SetPoints(Parser*);
+	void SetPoints(Parser*, int iteration);
 	void Triangulate(wxGauge* progressGauge,Render* render);
 	std::vector<pTriangle> GetTriangles() { return triangles; }
 private:

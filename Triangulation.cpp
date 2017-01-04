@@ -14,9 +14,9 @@ Triangulation::~Triangulation()
 {
 }
 
-void Triangulation::SetPoints(Parser* parser)
+void Triangulation::SetPoints(Parser* parser, int iteration)
 {
-    ppoints = parser->GetPoints(0);
+    ppoints = parser->GetPoints(iteration);
 	points.clear();
     points.push_back(Point(parser->GetMinX(), parser->GetMinY()));
     points.push_back(Point(parser->GetMaxX(), parser->GetMinY()));
@@ -26,7 +26,7 @@ void Triangulation::SetPoints(Parser* parser)
     return;
 }
 
-void Triangulation::Triangulate(wxGauge* progressGauge,Render* render)
+void Triangulation::Triangulate(wxGauge* progressGauge, Render* render)
 {
     //Make initial triangles
     auto T1 = std::make_shared<Triangle>(3, 1, 0);

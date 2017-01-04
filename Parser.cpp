@@ -56,8 +56,12 @@ void Parser::parseBinFile()
 			memcpy(&tempFloat, buffer + i * 12 + 8, 4);
 			tempPoint.z = tempFloat;
 
-			pointStore[actualItr].push_back(tempPoint);
 			++i;
+
+			if (tempFloat == 0.0f)
+				continue;
+
+			pointStore[actualItr].push_back(tempPoint);
 		}
 
 		delete buffer;

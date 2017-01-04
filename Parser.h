@@ -18,7 +18,11 @@ public:
 	double GetMinZ() { return minZ; }
 	std::map<int, std::vector<Point>>* GetPoints() { return &pointStore; }
 	std::vector<Point>* GetPoints(int itr) { return &pointStore[itr]; }
-    void SetPoints(int actualItr, std::vector<Point>* _points) { pointStore[actualItr] = *_points; }
+    void SetPoints(int actualItr, std::vector<Point>* _points) 
+	{
+		pointStore[actualItr].clear();
+		pointStore[actualItr] = *_points; 
+	}
 	int GetPointsCount(int itr) { return pointStore[itr].size(); }
     void generatePoints(int count, int seed);
 private:

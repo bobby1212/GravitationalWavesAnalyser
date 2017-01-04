@@ -1,6 +1,6 @@
 #include "GeometryDefines.h"
 
-double distance(Point p1, Point p2)
+float distance(Point& p1, Point& p2)
 {
 	Point a;
 	a.x = p2.x - p1.x;
@@ -19,7 +19,7 @@ bool operator==(Edge e1, Edge e2)
 	return e1.p1 == e2.p1 && e1.p2 == e2.p2 ? true : false;
 }
 
-double determinant(matrix* m)
+float determinant(matrix* m)
 {
 	return
 		(*m)[0][3] * (*m)[1][2] * (*m)[2][1] * (*m)[3][0] - (*m)[0][2] * (*m)[1][3] * (*m)[2][1] * (*m)[3][0] -

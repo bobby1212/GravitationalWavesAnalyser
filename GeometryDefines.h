@@ -65,6 +65,7 @@ public:
 
 bool operator==(Point p1, Point p2);
 bool operator==(Edge e1, Edge e2);
-double distance(Point p1, Point p2);
-double determinant(matrix* m);
+//Calculates the 2d distance between two points
+float distance(Point& p1, Point& p2);
+float determinant(matrix* m);
 bool CircumcircleContains(pTriangle T, Point p, std::vector<Point>* points, matrix* newMatrix);

@@ -295,10 +295,12 @@ void BasicFrame::triangulatePoints(wxCommandEvent & event)
 {
 
     Triangulation tri(errorHandler);
-    tri.SetPoints(parser);
+	tri.SetPoints(parser, iterationSlider->GetValue());
 
 	std::thread t2(&Triangulation::Triangulate, tri, triangulateGauge, panelRender);
 	t2.detach();
+
+	triangulationStore[iterationSlider->GetValue()] = tri;
 }
 
 void BasicFrame::generatePoints(wxCommandEvent & event)

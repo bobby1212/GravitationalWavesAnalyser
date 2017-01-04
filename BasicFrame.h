@@ -89,9 +89,11 @@ private:
     wxStaticText* radiusOption;
 
 	wxSlider* iterationSlider;
-
+	
+	//Other data stores
 	int height, width;
 	Parser* parser;
 	ErrorHandler* errorHandler;
+	std::map<unsigned int,Triangulation> triangulationStore;
 };
 

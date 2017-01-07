@@ -131,6 +131,7 @@ bool BasicFrame::CreateMenu()
 
     exportMenu->Append(ID_EXPORT_HEIGHTMAP, "Export heightmap");
 	exportMenu->Append(ID_EXPORT_STL, "Export Stl");
+	exportMenu->Append(ID_EXPORT_STL_ALL_ITERATIONS, "Export Stl with all iterations");
 
     infoMenu->Append(ID_INFO_ABOUT, "About");
 
@@ -157,6 +158,7 @@ EVT_SCROLL_CHANGED(BasicFrame::SetIteration)
 EVT_MENU(ID_FILE_OPEN, BasicFrame::OnFileOpen)
 EVT_MENU(ID_EXPORT_HEIGHTMAP, BasicFrame::OnExportHeightmap)
 EVT_MENU(ID_EXPORT_STL, BasicFrame::OnExportStl)
+EVT_MENU(ID_EXPORT_STL_ALL_ITERATIONS, BasicFrame::OnExportStlAllItr)
 
 END_EVENT_TABLE()
 //Render events
@@ -210,6 +212,18 @@ void BasicFrame::OnExportStl(wxCommandEvent & event)
 			SetStatusText("Export successful");
 		else
 			SetStatusText("Error at exporting file!");
+	}
+}
+
+void BasicFrame::OnExportStlAllItr(wxCommandEvent & event)
+{
+	if (parser)
+	{
+		StlExporter exporter(errorHandler);
+		for (int i = iterationSlider->GetMin(); i < iterationSlider->GetMax(); ++i)
+		{
+			exporter.ExportStl("wave" + std::to_string(i) + ".stl", panelRender->GetTriangles(i));
+		}
 	}
 }
 

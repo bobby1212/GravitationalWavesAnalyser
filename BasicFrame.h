@@ -17,6 +17,7 @@ public:
 	void OnFileOpen(wxCommandEvent& event);
     void OnExportHeightmap(wxCommandEvent& event);
 	void OnExportStl(wxCommandEvent& event);
+	void OnExportStlAllItr(wxCommandEvent& event);
 	void setHeightDivisor(wxCommandEvent& event);
 	void setDivisor(wxCommandEvent& event);
     void setMaxHeight(wxCommandEvent& event);

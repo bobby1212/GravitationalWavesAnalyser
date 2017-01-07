@@ -1,10 +1,12 @@
 #pragma once
 #include "SharedDefines.h"
-#include "GeometryDefines.h"
+#include "poly2tri.h"
 #include "ErrorHandler.h"
 #include <time.h>
 #include "PointBinaryTreeSort.h"
 #include "Parser.h"
+
+using namespace p2t;
 
 class Render : public wxGLCanvas
 {
@@ -13,7 +15,7 @@ public:
 	~Render();
 	void Reset();
 	void setPoints(std::map<int, std::vector<Point>>*);
-	void setTriangles(std::vector<pTriangle>);
+	void AddTriangulation(std::list<Triangle*> triangles, int iteration);
 	void Init();
 	void render(wxPaintEvent& evt);
 	void activateRenderTriangles(bool);
@@ -39,12 +41,13 @@ public:
     double getMinHeight() { return minHeight; }
     double getMaxRadius() { return maxRadius; }
     double getMinRadius() { return minRadius; }
-	std::vector<pTriangle> GetTriangles() { return triangles; }
+	std::map<int, std::list<Triangle*>>& GetTriangles() { return trianglesStore; }
+	std::list<Triangle*>& GetTriangles(int iteration) { return trianglesStore[iteration]; }
 
 private:
 	ErrorHandler* errorHandler;
 	std::map<int, std::vector<Point>>* points;
-	std::vector<pTriangle> triangles;
+	std::map<int, std::list<Triangle*>> trianglesStore;
 	bool renderTriangles;
 	bool renderPoints;
 	int actualItr;

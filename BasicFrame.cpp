@@ -206,7 +206,7 @@ void BasicFrame::OnExportStl(wxCommandEvent & event)
 	if (parser)
 	{
 		StlExporter exporter(errorHandler);
-		if (exporter.ExportStl("out.stl", panelRender->GetTriangles(), parser->GetPoints(0)))
+		if (exporter.ExportStl("out.stl", panelRender->GetTriangles(iterationSlider->GetValue())))
 			SetStatusText("Export successful");
 		else
 			SetStatusText("Error at exporting file!");
@@ -295,12 +295,10 @@ void BasicFrame::triangulatePoints(wxCommandEvent & event)
 {
 
     Triangulation tri(errorHandler);
-	tri.SetPoints(parser, iterationSlider->GetValue());
 
-	std::thread t2(&Triangulation::Triangulate, tri, triangulateGauge, panelRender);
-	t2.detach();
+	tri.Triangulate(parser->GetPoints(iterationSlider->GetValue()), parser->GetMinX(), parser->GetMaxX());
 
-	triangulationStore[iterationSlider->GetValue()] = tri;
+	panelRender->AddTriangulation(tri.GetTriangles(),iterationSlider->GetValue());
 }
 
 void BasicFrame::generatePoints(wxCommandEvent & event)

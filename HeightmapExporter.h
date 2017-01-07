@@ -1,6 +1,8 @@
 #pragma once
 #include "SharedDefines.h"
-#include "GeometryDefines.h"
+#include "poly2tri.h"
+
+using namespace p2t;
 
 class HeightmapExporter
 {

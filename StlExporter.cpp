@@ -2,7 +2,7 @@
 
 StlExporter::StlExporter(ErrorHandler * _errorHandler) : errorHandler(_errorHandler) { }
 
-bool StlExporter::ExportStl(std::string file, std::vector<pTriangle> triangles, std::vector<Point>* points)
+bool StlExporter::ExportStl(std::string file, std::list<Triangle*> triangles)
 {
 	std::ofstream out;
 
@@ -38,23 +38,23 @@ bool StlExporter::ExportStl(std::string file, std::vector<pTriangle> triangles, 
 		out.write((char*)&normal, sizeof(float));
 		out.write((char*)&normal, sizeof(float));
 
-		x = (*points)[i->p1].x;
-		y = (*points)[i->p1].y;
-		z = (*points)[i->p1].z;
+		x = i->GetPoint(0)->x;
+		y = i->GetPoint(0)->y;
+		z = i->GetPoint(0)->z;
 		out.write((char*)&x, sizeof(float));
 		out.write((char*)&y, sizeof(float));
 		out.write((char*)&z, sizeof(float));
 
-		x = (*points)[i->p3].x;
-		y = (*points)[i->p3].y;
-		z = (*points)[i->p3].z;
+		x = i->GetPoint(2)->x;
+		y = i->GetPoint(2)->y;
+		z = i->GetPoint(2)->z;
 		out.write((char*)&x, sizeof(float));
 		out.write((char*)&y, sizeof(float));
 		out.write((char*)&z, sizeof(float));
 
-		x = (*points)[i->p2].x;
-		y = (*points)[i->p2].y;
-		z = (*points)[i->p2].z;
+		x = i->GetPoint(1)->x;
+		y = i->GetPoint(1)->y;
+		z = i->GetPoint(1)->z;
 		out.write((char*)&x, sizeof(float));
 		out.write((char*)&y, sizeof(float));
 		out.write((char*)&z, sizeof(float));

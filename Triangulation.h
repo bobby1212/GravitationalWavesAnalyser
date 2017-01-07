@@ -1,8 +1,10 @@
 #pragma once
 #include "SharedDefines.h"
-#include "GeometryDefines.h"
+#include "poly2tri.h"
 #include "Parser.h"
 #include "Render.h"
+
+using namespace p2t;
 
 class Triangulation
 {
@@ -10,18 +12,10 @@ public:
 	Triangulation() { };
 	Triangulation(ErrorHandler* errorHandler);
 	~Triangulation();
-	void SetPoints(Parser*, int iteration);
-	void Triangulate(wxGauge* progressGauge,Render* render);
-	std::vector<pTriangle> GetTriangles() { return triangles; }
+
+	void Triangulate(std::vector<Point>* points, float min, float max);
+
+	std::list<Triangle*>& GetTriangles() { return trianglesMap; }
 private:
-	clock_t timeBegin;
-	std::vector<Point> points;
-    std::vector<Point>* ppoints;
-	std::vector<pTriangle> illegal_triangles;
-	std::vector<Edge> boundary;
-	matrix triangleMatrix;
-	pTriangle T1;
-	pTriangle T2;
-	std::vector<pTriangle> triangles;
-	ErrorHandler* errorHandler;
+	std::list<Triangle*> trianglesMap;
 };

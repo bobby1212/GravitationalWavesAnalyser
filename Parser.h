@@ -1,7 +1,9 @@
 #pragma once
 #include "SharedDefines.h"
-#include "GeometryDefines.h"
+#include "poly2tri.h"
 #include "ErrorHandler.h"
+
+using namespace p2t;
 
 class Parser
 {

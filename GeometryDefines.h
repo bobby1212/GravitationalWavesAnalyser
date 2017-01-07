@@ -1,71 +1,19 @@
 #pragma once
 #include "SharedDefines.h"
+#include "poly2tri.h"
 
-class Triangle;
+using namespace p2t;
 
-typedef std::shared_ptr<Triangle> pTriangle;
-typedef std::vector<std::vector<float>> matrix;
-
-struct Point
+float distance(Point& p1, Point& p2)
 {
-	float x;
-	float y;
-	float z;
+	Point a;
+	a.x = p2.x - p1.x;
+	a.y = p2.y - p1.y;
+	double dist = sqrt(a.x*a.x + a.y*a.y);
+	return dist;
+}
 
-	Point() : x(0), y(0), z(0) {}
-	Point(float x, float y) : x(x), y(y), z(0) {}
-	Point(float x, float y, float z) : x(x), y(y), z(z) {}
-
-	void normalize()
-	{
-		x = x / x;
-		y = y / y;
-		z = z / z;
-	}
-};
-
-struct Edge
+bool operator==(Point p1, Point p2)
 {
-	int p1, p2;
-	pTriangle triangle;
-
-	Edge(int _p1, int _p2, pTriangle _triangle)
-	{
-		p1 = _p1;
-		p2 = _p2;
-		triangle = _triangle;
-	};
-};
-
-class Triangle
-{
-public:
-	int p1, p2, p3;
-	pTriangle n1, n2, n3;
-
-	Triangle(int p1, int p2, int p3) : p1(p1), p2(p2), p3(p3)
-	{
-		n1 = nullptr;
-		n2 = nullptr;
-		n3 = nullptr;
-	}
-
-	void setEdge(Edge* e, pTriangle t, std::vector<Point>* points)
-	{
-		if ((p1 == e->p1 && p2 == e->p2) || (p1 == e->p2 && p2 == e->p1))
-			n1 = t;
-		if ((p2 == e->p1 && p3 == e->p2) || (p2 == e->p2 && p3 == e->p1))
-			n2 = t;
-		if ((p3 == e->p1 && p1 == e->p2) || (p1 == e->p2 && p3 == e->p1) || (p1 == e->p1 && p3 == e->p2))
-			n3 = t;
-
-		return;
-	}
-};
-
-bool operator==(Point p1, Point p2);
-bool operator==(Edge e1, Edge e2);
-//Calculates the 2d distance between two points
-float distance(Point& p1, Point& p2);
-float determinant(matrix* m);
-bool CircumcircleContains(pTriangle T, Point p, std::vector<Point>* points, matrix* newMatrix);
+	return p1.x < p2.x + 0.1f && p1.x > p2.x - 0.1f && p1.y < p2.y + 0.1f && p1.y > p2.y - 0.1f ? true : false;
+}

@@ -16,7 +16,6 @@ set(SOURCE
 	main.cpp
 	BasicFrame.cpp
 	ErrorHandler.cpp
-	GeometryDefines.cpp
 	HeightmapExporter.cpp
 	Parser.cpp
 	Render.cpp

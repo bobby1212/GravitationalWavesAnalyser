@@ -52,7 +52,7 @@ void Render::Reset()
 {
 	if(points)
 		points->clear();
-	triangles.clear();
+	trianglesStore.clear();
 }
 
 void Render::setPoints(std::map<int, std::vector<Point>>* _points)
@@ -61,10 +61,9 @@ void Render::setPoints(std::map<int, std::vector<Point>>* _points)
     calcValues();
 }
 
-void Render::setTriangles(std::vector<pTriangle> _triangles)
+void Render::AddTriangulation(std::list<Triangle*> triangles, int iteration)
 {
-    parent->SetStatusText("Triangles set! Count: " + std::to_string(_triangles.size()));
-    triangles = _triangles;
+	trianglesStore[iteration] = triangles;
 }
 
 void Render::Init()
@@ -126,30 +125,30 @@ void Render::render(wxPaintEvent& evt)
         }
         glEnd();
     }
-    if (triangles.size() > 0)
+    if (trianglesStore[actualItr].size() > 0)
     {
         glLineWidth(2.5f);
         glColor3f(1.0f, 1.0f, 1.0f);
-        for (auto &i : triangles)
+        for (auto &i : trianglesStore[actualItr])
         {
             glColor3f(1.0f, 1.0f, 1.0f);
             glBegin(GL_TRIANGLES);
-            glVertex3f(((*points)[actualItr][i->p1].x + offsetX) / divisor, ((*points)[actualItr][i->p1].y + offsetY) / divisor, ((*points)[actualItr][i->p1].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[actualItr][i->p2].x + offsetX) / divisor, ((*points)[actualItr][i->p2].y + offsetY) / divisor, ((*points)[actualItr][i->p2].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[actualItr][i->p3].x + offsetX) / divisor, ((*points)[actualItr][i->p3].y + offsetY) / divisor, ((*points)[actualItr][i->p3].z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(0)->x + offsetX) / divisor, (i->GetPoint(0)->y + offsetY) / divisor, (i->GetPoint(0)->z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(1)->x + offsetX) / divisor, (i->GetPoint(1)->y + offsetY) / divisor, (i->GetPoint(1)->z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(2)->x + offsetX) / divisor, (i->GetPoint(2)->y + offsetY) / divisor, (i->GetPoint(2)->z - offsetZ) / heightDivisor);
             glEnd();
             glColor3f(0.0f, 1.0f, 0.0f);
             glBegin(GL_LINES);
-            glVertex3f(((*points)[actualItr][i->p1].x + offsetX) / divisor, ((*points)[actualItr][i->p1].y + offsetY) / divisor, ((*points)[actualItr][i->p1].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[actualItr][i->p2].x + offsetX) / divisor, ((*points)[actualItr][i->p2].y + offsetY) / divisor, ((*points)[actualItr][i->p2].z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(0)->x + offsetX) / divisor, (i->GetPoint(0)->y + offsetY) / divisor, (i->GetPoint(0)->z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(1)->x + offsetX) / divisor, (i->GetPoint(1)->y + offsetY) / divisor, (i->GetPoint(1)->z - offsetZ) / heightDivisor);
             glEnd();
             glBegin(GL_LINES);
-            glVertex3f(((*points)[actualItr][i->p2].x + offsetX) / divisor, ((*points)[actualItr][i->p2].y + offsetY) / divisor, ((*points)[actualItr][i->p2].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[actualItr][i->p3].x + offsetX) / divisor, ((*points)[actualItr][i->p3].y + offsetY) / divisor, ((*points)[actualItr][i->p3].z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(1)->x + offsetX) / divisor, (i->GetPoint(1)->y + offsetY) / divisor, (i->GetPoint(1)->z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(2)->x + offsetX) / divisor, (i->GetPoint(2)->y + offsetY) / divisor, (i->GetPoint(2)->z - offsetZ) / heightDivisor);
             glEnd();
             glBegin(GL_LINES);
-            glVertex3f(((*points)[actualItr][i->p3].x + offsetX) / divisor, ((*points)[actualItr][i->p3].y + offsetY) / divisor, ((*points)[actualItr][i->p3].z - offsetZ) / heightDivisor);
-            glVertex3f(((*points)[actualItr][i->p1].x + offsetX) / divisor, ((*points)[actualItr][i->p1].y + offsetY) / divisor, ((*points)[actualItr][i->p1].z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(2)->x + offsetX) / divisor, (i->GetPoint(2)->y + offsetY) / divisor, (i->GetPoint(2)->z - offsetZ) / heightDivisor);
+            glVertex3f((i->GetPoint(0)->x + offsetX) / divisor, (i->GetPoint(0)->y + offsetY) / divisor, (i->GetPoint(0)->z - offsetZ) / heightDivisor);
             glEnd();
         }
     }

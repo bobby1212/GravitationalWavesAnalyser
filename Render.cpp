@@ -194,6 +194,19 @@ void Render::OnKeyDown(wxKeyEvent & event)
     Refresh();
 }
 
+std::list<Triangle*>& Render::GetTriangles(int iteration)
+{
+	if (trianglesStore.find(iteration) == trianglesStore.end())
+	{
+		parent->SetStatusText("Triangulation for iteration " + std::to_string(iteration) + " doesn't exist! It will be generated.");
+		Triangulation tri;
+		tri.Triangulate(&(*points)[iteration], minX, maxX);
+		trianglesStore[iteration] = tri.GetTriangles();
+	}
+
+	return trianglesStore[iteration];
+}
+
 void Render::calcValues()
 {
     float radius = 0.0f;

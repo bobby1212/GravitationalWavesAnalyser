@@ -14,7 +14,6 @@
 #include "boost\range\algorithm_ext\erase.hpp"
 #include "boost\random.hpp"
 #include "boost\tokenizer.hpp"
-#include <boost/iostreams/device/mapped_file.hpp>
 #include <future>
 #include <mutex>
 #include <chrono>
@@ -31,6 +30,7 @@ enum IDs
 	ID_EDIT_NOTHING,
     ID_EXPORT_HEIGHTMAP,
 	ID_EXPORT_STL,
+	ID_EXPORT_STL_ALL_ITERATIONS,
 	ID_INFO_ABOUT,
     ID_MOUSE_MOTION,
 

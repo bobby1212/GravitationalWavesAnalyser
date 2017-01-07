@@ -1,6 +1,6 @@
 #pragma once
 #include "SharedDefines.h"
-#include "poly2tri.h"
+#include "poly2tri/poly2tri.h"
 #include "Parser.h"
 #include "Render.h"
 

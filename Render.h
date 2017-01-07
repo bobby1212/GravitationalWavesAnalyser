@@ -1,10 +1,11 @@
 #pragma once
 #include "SharedDefines.h"
-#include "poly2tri.h"
+#include "poly2tri/poly2tri.h"
 #include "ErrorHandler.h"
 #include <time.h>
 #include "PointBinaryTreeSort.h"
 #include "Parser.h"
+#include "Triangulation.h"
 
 using namespace p2t;
 
@@ -42,7 +43,7 @@ public:
     double getMaxRadius() { return maxRadius; }
     double getMinRadius() { return minRadius; }
 	std::map<int, std::list<Triangle*>>& GetTriangles() { return trianglesStore; }
-	std::list<Triangle*>& GetTriangles(int iteration) { return trianglesStore[iteration]; }
+	std::list<Triangle*>& GetTriangles(int iteration);
 
 private:
 	ErrorHandler* errorHandler;

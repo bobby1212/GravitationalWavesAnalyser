@@ -1,6 +1,6 @@
 #include "SharedDefines.h"
 #include "ErrorHandler.h"
-#include "poly2tri.h"
+#include "poly2tri/poly2tri.h"
 
 using namespace p2t;
 

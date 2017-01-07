@@ -10,7 +10,7 @@ find_package(wxWidgets COMPONENTS core base gl)
 set(Boost_USE_STATIC_LIBS ON) 
 set(Boost_USE_MULTITHREADED ON)  
 set(Boost_USE_STATIC_RUNTIME OFF) 
-find_package(Boost 1.45.0 COMPONENTS iostreams random REQUIRED)
+find_package(Boost 1.45.0 COMPONENTS random REQUIRED)
 
 set(SOURCE
 	main.cpp
@@ -38,12 +38,28 @@ set(HEADER
 	StlExporter.h
 )
 
+set(P2T
+	poly2tri/poly2tri.h
+	poly2tri/sweep/advancing_front.cc
+	poly2tri/sweep/advancing_front.h
+	poly2tri/sweep/cdt.cc
+	poly2tri/sweep/cdt.h
+	poly2tri/sweep/sweep.cc
+	poly2tri/sweep/sweep.h
+	poly2tri/sweep/sweep_context.cc
+	poly2tri/sweep/sweep_context.h
+	poly2tri/common/shapes.cc
+	poly2tri/common/shapes.h
+	poly2tri/common/utils.h
+)
+
 include_directories(${Boost_INCLUDE_DIRS} ${wxWidgets_INCLUDE_DIRS})
 link_directories(${BOOST_LIBRARY_DIR})
 
 add_executable(	${PROJECT_NAME}
 				${SOURCE}
 				${HEADER}
+				${P2T}
  )
 
 target_link_libraries(	${PROJECT_NAME}
@@ -54,3 +70,5 @@ target_link_libraries(	${PROJECT_NAME}
  if(WIN32)
    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_DEBUG "/SUBSYSTEM:WINDOWS")
 endif(WIN32)
+
+source_group("p2t"  FILES ${P2T})

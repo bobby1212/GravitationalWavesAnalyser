@@ -315,6 +315,7 @@ void BasicFrame::triangulatePoints(wxCommandEvent & event)
 	tri.Triangulate(parser->GetPoints(iterationSlider->GetValue()), parser->GetMin(iterationSlider->GetValue()), parser->GetMax(iterationSlider->GetValue()));
 
 	panelRender->AddTriangulation(tri.GetTriangles(),iterationSlider->GetValue());
+	Refresh();
 }
 
 void BasicFrame::generatePoints(wxCommandEvent & event)

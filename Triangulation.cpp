@@ -21,15 +21,13 @@ void Triangulation::Triangulate(std::vector<Point>* points, float min, float max
 	polyline.push_back(new Point(max, min));
 
 	for (auto &i : *points)
-		polyline.push_back(new Point(i.x, i.y, i.z,true));
+		polyline.push_back(new Point(i.x, i.y, i.z));
 
 	p2t::CDT* cdt = new p2t::CDT(polyline);
 
 	cdt->Triangulate();
 
 	trianglesMap = cdt->GetMap();
-
-	std::list<Triangle*>::iterator itr = trianglesMap.begin();
 
 	return;
 }

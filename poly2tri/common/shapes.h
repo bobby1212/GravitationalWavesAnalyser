@@ -44,7 +44,7 @@ struct Edge;
 
 struct Point {
 
-  double x, y, z;
+  float x, y, z;
 
   /// Default constructor does nothing (for performance).
   Point()
@@ -52,14 +52,16 @@ struct Point {
     x = 0.0;
     y = 0.0;
 	z = 0.0;
+	edge_list = nullptr;
   }
 
   /// The edges this point constitutes an upper ending point
-  std::vector<Edge*> edge_list;
+  std::vector<Edge*>* edge_list;
 
   /// Construct using coordinates.
-  Point(double x, double y) : x(x), y(y),z(0) {}
-  Point(double x, double y, double z) : x(x), y(y), z(z) {}
+  Point(double x, double y) : x(x), y(y),z(0) { edge_list = nullptr; }
+  Point(double x, double y, double z) : x(x), y(y), z(z) { edge_list = nullptr; }
+  Point(double x, double y, double z, bool initEdges) : x(x), y(y), z(z) { edge_list = new std::vector<Edge*>(); }
 
   /// Set this point to all zeros.
   void set_zero()
@@ -119,6 +121,11 @@ struct Point {
     return len;
   }
 
+  void InitEdges()
+  {
+	  edge_list = new std::vector<Edge*>();
+  }
+
 };
 
 double distance(Point& p1, Point& p2);
@@ -144,7 +151,7 @@ struct Edge {
       }
     }
 
-    q->edge_list.push_back(this);
+    q->edge_list->push_back(this);
   }
 };
 

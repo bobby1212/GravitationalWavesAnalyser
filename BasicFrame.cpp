@@ -9,6 +9,8 @@ BasicFrame::BasicFrame(const wxChar * title, int xpos, int ypos, int width, int 
     statusBar = new wxStatusBar(this);
     SetStatusBar(statusBar);
     errorHandler = new ErrorHandler(this);
+
+	SetStatusText("Größe p2t::Point: " + std::to_string(sizeof(Point)));
 }
 
 BasicFrame::~BasicFrame()
@@ -310,7 +312,7 @@ void BasicFrame::triangulatePoints(wxCommandEvent & event)
 
     Triangulation tri(errorHandler);
 
-	tri.Triangulate(parser->GetPoints(iterationSlider->GetValue()), parser->GetMinX(), parser->GetMaxX());
+	tri.Triangulate(parser->GetPoints(iterationSlider->GetValue()), parser->GetMin(iterationSlider->GetValue()), parser->GetMax(iterationSlider->GetValue()));
 
 	panelRender->AddTriangulation(tri.GetTriangles(),iterationSlider->GetValue());
 }

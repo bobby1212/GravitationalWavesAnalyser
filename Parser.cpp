@@ -1,13 +1,7 @@
 #include "Parser.h"
 
 Parser::Parser(wxWindow* parent) :
-	origin(Point(0, 0)),
-	minX(10000.0f),
-	maxX(-10000.0f),
-	minY(10000.0f),
-	maxY(-10000.0f),
-	minZ(10000.0f),
-	maxZ(-10000.0f)
+	origin(Point(0, 0))
 {
 	errorHandler = new ErrorHandler(parent);
 }
@@ -32,6 +26,7 @@ void Parser::parseBinFile()
 	int actualItr = 0;
 	int nmbPoints = 0;
 	byte* buffer = new byte;
+	Point tempPoint = Point();
 
     while (inputStreamBinary.peek() != EOF)
     {
@@ -66,17 +61,19 @@ void Parser::parseBinFile()
 
 		delete buffer;
     }
+
+	/*for (std::map<int, std::vector<Point>>::iterator itr = pointStore.begin(); itr != pointStore.end(); itr++)
+		FindMinMax(itr->first);*/
+
     return;
 }
 
 void Parser::generatePoints(int count,int seed)
 {
-    minX = -10;
-    maxX = 10;
-    minY = -10;
-    maxY = 10;
+    min[0] = -10;
+    max[0] = 10;
     base_generator_type generator(seed);
-    boost::uniform_real<> uni_dist(minX, maxX);
+    boost::uniform_real<> uni_dist(min[0], max[0]);
     boost::variate_generator<base_generator_type&, boost::uniform_real<>> uni(generator, uni_dist);
     boost::uniform_real<> uni_dist_height(0, 2);
     boost::variate_generator<base_generator_type&, boost::uniform_real<>> uni_height(generator, uni_dist_height);
@@ -98,5 +95,20 @@ void Parser::generatePoints(int count,int seed)
         }
 		pointStore[0].push_back(newPoint);
     }
+
+	FindMinMax(0);
+}
+
+void Parser::FindMinMax(int iteration)
+{
+	min[iteration] = 100000.0f;
+	max[iteration] = -1000000.0f;
+	for (auto &i : pointStore[iteration])
+	{
+		if (i.x > max[iteration])
+			max[iteration] = i.x;
+		if (i.x < min[iteration])
+			min[iteration] = i.x;
+	}
 }
 

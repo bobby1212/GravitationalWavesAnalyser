@@ -21,7 +21,7 @@ void Triangulation::Triangulate(std::vector<Point>* points, float min, float max
 	polyline.push_back(new Point(max, min));
 
 	for (auto &i : *points)
-		polyline.push_back(new Point(i.x,i.y,i.z));
+		polyline.push_back(new Point(i.x, i.y, i.z,true));
 
 	p2t::CDT* cdt = new p2t::CDT(polyline);
 

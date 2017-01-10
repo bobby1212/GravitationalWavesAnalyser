@@ -44,7 +44,20 @@ void PointBinaryTreeSort::insert(Tree** root, std::vector<Point>::iterator newVa
 
         while (temp != nullptr)
         {
-            if ((&*newValue)->x <= temp->point->x)
+			if ((&*newValue)->x == temp->point->x)
+			{
+				if ((&*newValue)->y < temp->point->y)
+				{
+					parent = temp;
+					temp = temp->left;
+				}
+				else
+				{
+					parent = temp;
+					temp = temp->right;
+				}
+			}
+            else if ((&*newValue)->x < temp->point->x)
             {
                 parent = temp;
                 temp = temp->left;
@@ -61,7 +74,18 @@ void PointBinaryTreeSort::insert(Tree** root, std::vector<Point>::iterator newVa
         newNode->left = nullptr;
         newNode->right = nullptr;
 
-        if ((&*newValue)->x <= parent->point->x)
+		if ((&*newValue)->x == parent->point->x)
+		{
+			if ((&*newValue)->y < parent->point->y)
+			{
+				parent->left = newNode;
+			}
+			else
+			{
+				parent->right = newNode;
+			}
+		}
+		else if ((&*newValue)->x <= parent->point->x)
             parent->left = newNode;
         else
             parent->right = newNode;

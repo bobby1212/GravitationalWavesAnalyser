@@ -9,7 +9,7 @@ float distance(Point& p1, Point& p2)
 	Point a;
 	a.x = p2.x - p1.x;
 	a.y = p2.y - p1.y;
-	double dist = sqrt(a.x*a.x + a.y*a.y);
+	float dist = sqrt(a.x*a.x + a.y*a.y);
 	return dist;
 }
 

@@ -33,12 +33,12 @@
 
 namespace p2t {
 
-double distance(Point& p1,Point& p2)
+float distance(Point& p1,Point& p2)
 {
 	Point a;
 	a.x = p2.x - p1.x;
 	a.y = p2.y - p1.y;
-	double dist = sqrt(a.x*a.x + a.y*a.y);
+	float dist = sqrt(a.x*a.x + a.y*a.y);
 	return dist;
 }
 
@@ -129,8 +129,8 @@ void Triangle::ClearDelunayEdges()
 Point* Triangle::OppositePoint(Triangle& t, Point& p)
 {
   Point *cw = t.PointCW(p);
-  double x = cw->x;
-  double y = cw->y;
+  float x = cw->x;
+  float y = cw->y;
   x = p.x;
   y = p.y;
   return PointCW(*cw);

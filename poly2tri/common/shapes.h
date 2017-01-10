@@ -58,8 +58,8 @@ struct Point {
   std::vector<Edge*> edge_list;
 
   /// Construct using coordinates.
-  Point(double x, double y) : x(x), y(y),z(0) { }
-  Point(double x, double y, double z) : x(x), y(y), z(z) { }
+  Point(float x, float y) : x(x), y(y),z(0) { }
+  Point(float x, float y, float z) : x(x), y(y), z(z) { }
 
   /// Set this point to all zeros.
   void set_zero()
@@ -69,7 +69,7 @@ struct Point {
   }
 
   /// Set this point to some specified coordinates.
-  void set(double x_, double y_)
+  void set(float x_, float y_)
   {
     x = x_;
     y = y_;
@@ -98,22 +98,22 @@ struct Point {
   }
 
   /// Multiply this point by a scalar.
-  void operator *=(double a)
+  void operator *=(float a)
   {
     x *= a;
     y *= a;
   }
 
   /// Get the length of this point (the norm).
-  double Length() const
+  float Length() const
   {
     return sqrt(x * x + y * y);
   }
 
   /// Convert this point into a unit point. Returns the Length.
-  double Normalize()
+  float Normalize()
   {
-    double len = Length();
+    float len = Length();
     x /= len;
     y /= len;
     return len;
@@ -121,7 +121,7 @@ struct Point {
 
 };
 
-double distance(Point& p1, Point& p2);
+float distance(Point& p1, Point& p2);
 
 // Represents a simple polygon's edge
 struct Edge {
@@ -246,7 +246,7 @@ inline Point operator -(const Point& a, const Point& b)
 }
 
 /// Multiply point by scalar
-inline Point operator *(double s, const Point& a)
+inline Point operator *(float s, const Point& a)
 {
   return Point(s * a.x, s * a.y);
 }
@@ -262,27 +262,27 @@ inline bool operator !=(const Point& a, const Point& b)
 }
 
 /// Peform the dot product on two vectors.
-inline double Dot(const Point& a, const Point& b)
+inline float Dot(const Point& a, const Point& b)
 {
   return a.x * b.x + a.y * b.y;
 }
 
 /// Perform the cross product on two vectors. In 2D this produces a scalar.
-inline double Cross(const Point& a, const Point& b)
+inline float Cross(const Point& a, const Point& b)
 {
   return a.x * b.y - a.y * b.x;
 }
 
 /// Perform the cross product on a point and a scalar. In 2D this produces
 /// a point.
-inline Point Cross(const Point& a, double s)
+inline Point Cross(const Point& a, float s)
 {
   return Point(s * a.y, -s * a.x);
 }
 
 /// Perform the cross product on a scalar and a point. In 2D this produces
 /// a point.
-inline Point Cross(const double s, const Point& a)
+inline Point Cross(const float s, const Point& a)
 {
   return Point(-s * a.y, s * a.x);
 }

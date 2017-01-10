@@ -46,7 +46,7 @@ struct Node {
   Node* next;
   Node* prev;
 
-  double value;
+  float value;
 
   Node(Point& p) : point(&p), triangle(NULL), next(NULL), prev(NULL), value(p.x)
   {
@@ -74,7 +74,7 @@ Node* search();
 void set_search(Node* node);
 
 /// Locate insertion point along advancing front
-Node* LocateNode(const double& x);
+Node* LocateNode(const float& x);
 
 Node* LocatePoint(const Point* point);
 
@@ -82,7 +82,7 @@ private:
 
 Node* head_, *tail_, *search_node_;
 
-Node* FindSearchNode(const double& x);
+Node* FindSearchNode(const float& x);
 };
 
 inline Node* AdvancingFront::head()

@@ -12,7 +12,7 @@ HeightmapExporter::~HeightmapExporter()
 {
 }
 
-bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,double minHeight,double minRadius,double maxRadius)
+bool HeightmapExporter::exportHeightmap(std::string fileName, float maxHeight,float minHeight,float minRadius,float maxRadius)
 {
     if (!points)
         return false;
@@ -53,7 +53,7 @@ bool HeightmapExporter::exportHeightmap(std::string fileName, double maxHeight,d
     output.write((char*)&temp, sizeof(int));
 
     float tempFloat = 0.0f;
-    double radius = 0.0f;
+    float radius = 0.0f;
 
     int xRes = maxRadius*2;
     int yRes = xRes;

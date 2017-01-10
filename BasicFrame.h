@@ -1,11 +1,14 @@
 #pragma once
 #include "SharedDefines.h"
 #include "Render.h"
-#include "Parser.h"
 #include "ErrorHandler.h"
 #include "HeightmapExporter.h"
 #include "Triangulation.h"
 #include "StlExporter.h"
+#include "DataStorage.h"
+
+class DataStorage;
+class Render;
 
 class BasicFrame : public wxFrame
 {
@@ -80,10 +83,6 @@ private:
     wxButton* triangulateButton;
     wxGauge* triangulateGauge;
 
-    wxSizer* generatePointsSizer;
-    wxButton* generatePointsButton;
-    wxTextCtrl* generatePointsCount;
-
     wxSizer* radiusOptionSizer;
     wxTextCtrl* maxRadius;
     wxTextCtrl* minRadius;
@@ -93,7 +92,7 @@ private:
 	
 	//Other data stores
 	int height, width;
-	Parser* parser;
 	ErrorHandler* errorHandler;
+	DataStorage* dataStorage;
 };
 

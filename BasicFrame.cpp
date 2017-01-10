@@ -4,11 +4,12 @@
 
 BasicFrame::BasicFrame(const wxChar * title, int xpos, int ypos, int width, int height) : wxFrame((wxFrame*)NULL, -1, title, wxPoint(xpos, ypos), wxSize(width, height))
 {
+	errorHandler = new ErrorHandler(this);
+	dataStorage = new DataStorage(errorHandler, this);
     CreateMenu();
     CreatePanels();
     statusBar = new wxStatusBar(this);
     SetStatusBar(statusBar);
-    errorHandler = new ErrorHandler(this);
 
 	SetStatusText("Größe p2t::Point: " + std::to_string(sizeof(Point)));
 }
@@ -23,7 +24,7 @@ bool BasicFrame::CreatePanels()
     sizer = new wxBoxSizer(wxHORIZONTAL);
     panelOptions = new wxPanel(this, ID_PANEL_OPTIONS, wxPoint(0, 0), wxSize(width / 3, height));
     int args[] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0 };
-    panelRender = new Render(this, args, height, width / 3 * 2, width / 3);
+    panelRender = new Render(this, dataStorage, args, height, width / 3 * 2, width / 3);
     sizer->Add(panelOptions, 1, wxEXPAND);
     sizer->Add(panelRender, 1, wxEXPAND);
 
@@ -58,10 +59,6 @@ bool BasicFrame::CreatePanels()
     triangulateButton = new wxButton(panelOptions, ID_OPTION_TRIANGULATE, "Triangulate");
     triangulateGauge = new wxGauge(panelOptions, wxID_ANY, 100, wxDefaultPosition, wxSize(100, 25), wxGA_HORIZONTAL | wxGA_SMOOTH);
 
-    generatePointsSizer = new wxBoxSizer(wxHORIZONTAL);
-    generatePointsButton = new wxButton(panelOptions, ID_OPTION_GENERATE_POINTS, "Generate Points");
-    generatePointsCount = new wxTextCtrl(panelOptions,ID_OPTION_GENERATE_POINTS_COUNT,"100", wxDefaultPosition, wxDefaultSize, wxTE_CENTER);
-
     radiusOptionSizer = new wxBoxSizer(wxHORIZONTAL);
     radiusOption = new wxStaticText(panelOptions, wxID_ANY, "Max. and min. radius");
     maxRadius = new wxTextCtrl(panelOptions,ID_OPTION_MAX_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
@@ -91,9 +88,6 @@ bool BasicFrame::CreatePanels()
     triangulateSizer->Add(triangulateButton, wxEXPAND);
     triangulateSizer->Add(triangulateGauge, wxEXPAND);
 
-    generatePointsSizer->Add(generatePointsButton, wxEXPAND);
-    generatePointsSizer->Add(generatePointsCount, wxEXPAND);
-
     radiusOptionSizer->Add(radiusOption, wxEXPAND);
     radiusOptionSizer->Add(maxRadius, wxEXPAND);
     radiusOptionSizer->Add(minRadius, wxEXPAND);
@@ -105,7 +99,6 @@ bool BasicFrame::CreatePanels()
     optionsSizer->Add(minHeightSizer, 0, wxEXPAND);
     optionsSizer->Add(removeDuplicatesSizer, 0, wxEXPAND);
     optionsSizer->Add(triangulateSizer, 0, wxEXPAND);
-    optionsSizer->Add(generatePointsSizer, 0, wxEXPAND);
     optionsSizer->Add(radiusOptionSizer, 0, wxEXPAND);
 	optionsSizer->Add(iterationSlider, 0, wxEXPAND);
 
@@ -153,7 +146,6 @@ EVT_TEXT_ENTER(ID_OPTION_MAX_HEIGHT, BasicFrame::setMaxHeight)
 EVT_TEXT_ENTER(ID_OPTION_MIN_HEIGHT, BasicFrame::setMinHeight)
 EVT_BUTTON(ID_OPTION_REMOVE_DUPLICATES, BasicFrame::removeDuplicates)
 EVT_BUTTON(ID_OPTION_TRIANGULATE, BasicFrame::triangulatePoints)
-EVT_BUTTON(ID_OPTION_GENERATE_POINTS, BasicFrame::generatePoints)
 EVT_TEXT_ENTER(ID_OPTION_MIN_RADIUS, BasicFrame::setMinRadius)
 EVT_TEXT_ENTER(ID_OPTION_MAX_RADIUS, BasicFrame::setMaxRadius)
 EVT_SCROLL_CHANGED(BasicFrame::SetIteration)
@@ -177,14 +169,12 @@ void BasicFrame::OnFileOpen(wxCommandEvent &event)
     if (dialog->ShowModal() == wxID_CANCEL)
         return;
 
-    parser = new Parser(this);
-    parser->openBin(std::string(dialog->GetPath()));
-    parser->parseBinFile();
+	dataStorage->LoadPoints(std::string(dialog->GetPath()));
 	UpdateIterationRange();
-    panelRender->setPoints(parser->GetPoints());
+	panelRender->SetIteration(0);
     
     //Set nmb of point in text box
-    nmbPoints->SetLabel(std::to_string(parser->GetPointsCount(0)));
+    nmbPoints->SetLabel(std::to_string(dataStorage->GetPointsCount(0)));
 
     panelRender->activateRenderPoints(true);
     Refresh();
@@ -192,9 +182,9 @@ void BasicFrame::OnFileOpen(wxCommandEvent &event)
 
 void BasicFrame::OnExportHeightmap(wxCommandEvent & event)
 {
-    if (parser)
+    if (dataStorage)
     {
-        HeightmapExporter exporter(parser->GetPoints(0));
+        HeightmapExporter exporter(dataStorage->GetPoints(0));
         if (!exporter.exportHeightmap("out.hm", panelRender->GetMaxHeight(), panelRender->getMinHeight(), panelRender->getMinRadius(), panelRender->getMaxRadius()))
             errorHandler->DisplayError("Error at exporting file");
         else
@@ -207,10 +197,10 @@ void BasicFrame::OnExportHeightmap(wxCommandEvent & event)
 
 void BasicFrame::OnExportStl(wxCommandEvent & event)
 {
-	if (parser)
+	if (dataStorage)
 	{
 		StlExporter exporter(errorHandler);
-		if (exporter.ExportStl("out.stl", panelRender->GetTriangles(iterationSlider->GetValue())))
+		if (exporter.ExportStl("out.stl", dataStorage->GetTriangles(iterationSlider->GetValue())))
 			SetStatusText("Export successful");
 		else
 			SetStatusText("Error at exporting file!");
@@ -219,12 +209,12 @@ void BasicFrame::OnExportStl(wxCommandEvent & event)
 
 void BasicFrame::OnExportStlAllItr(wxCommandEvent & event)
 {
-	if (parser)
+	if (dataStorage)
 	{
 		StlExporter exporter(errorHandler);
 		for (int i = iterationSlider->GetMin(); i < iterationSlider->GetMax(); ++i)
 		{
-			exporter.ExportStl("wave" + std::to_string(i) + ".stl", panelRender->GetTriangles(i));
+			exporter.ExportStl("wave" + std::to_string(i) + ".stl", dataStorage->GetTriangles(i));
 		}
 	}
 }
@@ -233,7 +223,7 @@ void BasicFrame::setHeightDivisor(wxCommandEvent &e)
 {
     try
     {
-        panelRender->setHeightDivisor(boost::lexical_cast<double>(e.GetString()));
+        panelRender->setHeightDivisor(boost::lexical_cast<float>(e.GetString()));
         SetStatusText("Height Divisor changed");
         panelRender->Refresh();
     }
@@ -248,7 +238,7 @@ void BasicFrame::setDivisor(wxCommandEvent &e)
     try
     {
         SetStatusText("Divisor changed");
-        panelRender->setDivisor(boost::lexical_cast<double>(e.GetString()));
+        panelRender->setDivisor(boost::lexical_cast<float>(e.GetString()));
         panelRender->Refresh();
     }
     catch (boost::bad_lexical_cast)
@@ -262,7 +252,7 @@ void BasicFrame::setMaxHeight(wxCommandEvent & e)
     try
     {
         SetStatusText("Max Height changed");
-        panelRender->setMaxHeight(boost::lexical_cast<double>(e.GetString()));
+        panelRender->setMaxHeight(boost::lexical_cast<float>(e.GetString()));
         panelRender->Refresh();
     }
     catch (boost::bad_lexical_cast)
@@ -280,7 +270,7 @@ void BasicFrame::setMinHeight(wxCommandEvent & e)
     try
     {
         SetStatusText("Min Height changed");
-        panelRender->setMinHeight(boost::lexical_cast<double>(e.GetString()));
+        panelRender->setMinHeight(boost::lexical_cast<float>(e.GetString()));
         panelRender->Refresh();
     }
     catch (boost::bad_lexical_cast)
@@ -297,8 +287,7 @@ void BasicFrame::removeDuplicates(wxCommandEvent& event)
 { 
     try
     {
-        std::thread t1(&Render::removeDuplicates, panelRender, 0.5f, nmbPoints, parser, boost::lexical_cast<float>(removeDuplicatesVariance->GetValue()));
-        t1.detach();
+		SetStatusText("Remove duplicates...");
     }
     catch (boost::bad_lexical_cast)
     {
@@ -312,39 +301,17 @@ void BasicFrame::triangulatePoints(wxCommandEvent & event)
 
     Triangulation tri(errorHandler);
 
-	tri.Triangulate(parser->GetPoints(iterationSlider->GetValue()), parser->GetMin(iterationSlider->GetValue()), parser->GetMax(iterationSlider->GetValue()));
+	tri.Triangulate(dataStorage->GetPoints(iterationSlider->GetValue()), dataStorage->GetMin(iterationSlider->GetValue()), dataStorage->GetMax(iterationSlider->GetValue()));
 
-	panelRender->AddTriangulation(tri.GetTriangles(),iterationSlider->GetValue());
+	dataStorage->AddTriangles(tri.GetTriangles(),iterationSlider->GetValue());
 	Refresh();
-}
-
-void BasicFrame::generatePoints(wxCommandEvent & event)
-{
-    try
-    {
-        parser = new Parser(this);
-
-        parser->generatePoints(boost::lexical_cast<int>(generatePointsCount->GetValue()),clock());
-		panelRender->Reset();
-		panelRender->setPoints(parser->GetPoints());
-        panelRender->calcValues();
-        panelRender->Refresh();
-    }
-    catch (boost::bad_lexical_cast)
-    {
-        errorHandler->DisplayError(ERROR_NAN);
-    }
-    catch (...)
-    {
-        errorHandler->DisplayError(ERROR_UNKNOWN);
-    }
 }
 
 void BasicFrame::setMinRadius(wxCommandEvent & event)
 {
     try
     {
-        panelRender->setMinRadius(boost::lexical_cast<double>(event.GetString()));
+        panelRender->setMinRadius(boost::lexical_cast<float>(event.GetString()));
         panelRender->calcValues();
         Refresh();
     }
@@ -358,7 +325,7 @@ void BasicFrame::setMaxRadius(wxCommandEvent & event)
 {
     try
     {
-        panelRender->setMaxRadius(boost::lexical_cast<double>(event.GetString()));
+        panelRender->setMaxRadius(boost::lexical_cast<float>(event.GetString()));
         panelRender->calcValues();
         Refresh();
     }
@@ -381,9 +348,9 @@ void BasicFrame::SetIteration(wxScrollEvent & event)
 
 void BasicFrame::UpdateIterationRange()
 {
-	if (parser)
+	if (dataStorage)
 	{
-		iterationSlider->SetMax(parser->GetPoints()->size());
+		iterationSlider->SetMax(dataStorage->GetIterationCount());
 	}
 }
 

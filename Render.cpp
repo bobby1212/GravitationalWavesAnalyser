@@ -2,8 +2,8 @@
 
 
 
-Render::Render(wxFrame* _parent, int* args, int height, int width, int positionX) :
-    wxGLCanvas(_parent, wxID_ANY, args, wxPoint(positionX, 0), wxSize(width, height), wxFULL_REPAINT_ON_RESIZE)
+Render::Render(wxFrame* _parent, DataStorage* _dataStorage, int* args, int height, int width, int positionX) :
+    wxGLCanvas(_parent, wxID_ANY, args, wxPoint(positionX, 0), wxSize(width, height), wxFULL_REPAINT_ON_RESIZE) , dataStorage(_dataStorage)
 {
     errorHandler = new ErrorHandler(this);
     parent = _parent;
@@ -39,31 +39,11 @@ Render::Render(wxFrame* _parent, int* args, int height, int width, int positionX
     minHeight = -10000.0f;
     minRadius = 0.0f;
     maxRadius = 10000.0f;
-
-	points = nullptr;
 }
 
 Render::~Render()
 {
     delete glContext;
-}
-
-void Render::Reset()
-{
-	if(points)
-		points->clear();
-	trianglesStore.clear();
-}
-
-void Render::setPoints(std::map<int, std::vector<Point>>* _points)
-{
-    points = _points;
-    calcValues();
-}
-
-void Render::AddTriangulation(std::list<Triangle*> triangles, int iteration)
-{
-	trianglesStore[iteration] = triangles;
 }
 
 void Render::Init()
@@ -86,6 +66,9 @@ void Render::Init()
 
 void Render::render(wxPaintEvent& evt)
 {
+	if (!dataStorage)
+		return;
+
     deltaTime = clock() - deltaTime;
 
     wxGLCanvas::SetCurrent(*glContext);
@@ -104,15 +87,15 @@ void Render::render(wxPaintEvent& evt)
     glPointSize(2.0f);
 
     glColor3f(0.0f, 0.0f, 1.0f);
-    if (renderPoints && points)
+    if (renderPoints && dataStorage->GetPoints(actualItr))
     {
-        if ((*points)[actualItr].size() == 1)
+        if (dataStorage->GetPoints(actualItr)->size() == 1)
             errorHandler->DisplayError(ERROR_ONE_POINT);
 
         float radius = 0.0f;
         
         glBegin(GL_POINTS);
-        for (auto &i : (*points)[actualItr])
+        for (auto &i : *dataStorage->GetPoints(actualItr))
         {
             /*
             Little problem here:
@@ -125,11 +108,11 @@ void Render::render(wxPaintEvent& evt)
         }
         glEnd();
     }
-    if (trianglesStore[actualItr].size() > 0)
+    if (dataStorage->GetTriangles(actualItr).size() > 0)
     {
         glLineWidth(2.5f);
         glColor3f(1.0f, 1.0f, 1.0f);
-        for (auto &i : trianglesStore[actualItr])
+        for (auto &i : dataStorage->GetTriangles(actualItr))
         {
             glColor3f(1.0f, 1.0f, 1.0f);
             glBegin(GL_TRIANGLES);
@@ -194,23 +177,10 @@ void Render::OnKeyDown(wxKeyEvent & event)
     Refresh();
 }
 
-std::list<Triangle*>& Render::GetTriangles(int iteration)
-{
-	if (trianglesStore.find(iteration) == trianglesStore.end())
-	{
-		parent->SetStatusText("Triangulation for iteration " + std::to_string(iteration) + " doesn't exist! It will be generated.");
-		Triangulation tri;
-		tri.Triangulate(&(*points)[iteration], minX, maxX);
-		trianglesStore[iteration] = tri.GetTriangles();
-	}
-
-	return trianglesStore[iteration];
-}
-
 void Render::calcValues()
 {
     float radius = 0.0f;
-    for (auto &i : (*points)[actualItr])
+    for (auto &i : *dataStorage->GetPoints(actualItr))
     {
         radius = distance(Point(0, 0, 0), i);
         if (i.z - offsetZ < maxHeight && i.z - offsetZ > minHeight && radius < maxRadius && radius > minRadius)
@@ -236,11 +206,11 @@ void Render::calcValues()
     //TODO: Update option panel values
 }
 
-void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText,Parser* parser,float variance)
+/*void Render::removeDuplicates(float radius, wxStaticBox* nmbPointsText,Parser* parser,float variance)
 {
-    if (!points)
+    if (!dataStorage->GetPoints(actualItr))
         return;
-    if (points->size() == 0)
+    if (dataStorage->GetPoints(actualItr)->size() == 0)
     {
         errorHandler->DisplayError("There are no points to remove!");
         return;
@@ -249,7 +219,7 @@ void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText,Parser* 
     //First sort the points
     //x Axis:
     PointBinaryTreeSort sort;
-    std::list<Point*> sortedPoints = sort.SortPointsXAxis(&(*points)[actualItr]);
+    std::list<Point*> sortedPoints = sort.SortPointsXAxis(dataStorage->GetPoints(actualItr));
     std::vector<Point> singlePoints;
 
     int size = sortedPoints.size();
@@ -279,7 +249,7 @@ void Render::removeDuplicates(double radius, wxStaticBox* nmbPointsText,Parser* 
     nmbPointsText->SetLabel(std::to_string(singlePoints.size()));
 
     //Refresh();
-    parser->SetPoints(actualItr,&singlePoints);
+    dataStorage->SetPoints(actualItr,&singlePoints);
 
     return;
-}
+}*/

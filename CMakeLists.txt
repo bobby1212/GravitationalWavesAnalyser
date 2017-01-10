@@ -17,11 +17,11 @@ set(SOURCE
 	BasicFrame.cpp
 	ErrorHandler.cpp
 	HeightmapExporter.cpp
-	Parser.cpp
 	Render.cpp
 	Triangulation.cpp
 	PointBinaryTreeSort.cpp
 	StlExporter.cpp
+	DataStorage.cpp
 )
 
 set(HEADER
@@ -30,12 +30,12 @@ set(HEADER
 	ErrorHandler.h
 	GeometryDefines.h
 	HeightmapExporter.h
-	Parser.h
 	Render.h
 	SharedDefines.h
 	Triangulation.h
 	PointBinaryTreeSort.h
 	StlExporter.h
+	DataStorage.h
 )
 
 set(P2T

@@ -40,9 +40,9 @@
 
 namespace p2t {
 
-const float PI_3div4 = 3 * M_PI / 4;
-const float PI_div2 = 1.57079632679489661923;
-const float EPSILON = 1e-12;
+const float PI_3div4 = 3.0f * M_PI / 4.0f;
+const float PI_div2 = 1.57079632679489661923f;
+const float EPSILON = 1e-12f;
 
 enum Orientation { CW, CCW, COLLINEAR };
 

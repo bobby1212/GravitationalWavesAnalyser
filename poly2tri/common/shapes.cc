@@ -42,6 +42,13 @@ float distance(Point& p1,Point& p2)
 	return dist;
 }
 
+bool operator ==(Point& p1, Point& p2)
+{
+	if (p1.x == p2.x && p1.y == p2.y)
+		return true;
+	else
+		return false;
+}
 
 Triangle::Triangle(Point& a, Point& b, Point& c)
 {

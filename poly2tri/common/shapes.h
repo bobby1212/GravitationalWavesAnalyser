@@ -123,6 +123,8 @@ struct Point {
 
 float distance(Point& p1, Point& p2);
 
+bool operator ==(Point& p1, Point& p2);
+
 // Represents a simple polygon's edge
 struct Edge {
 

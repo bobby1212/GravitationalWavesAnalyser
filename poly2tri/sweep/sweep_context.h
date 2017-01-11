@@ -40,7 +40,7 @@ namespace p2t {
 
 // Inital triangle factor, seed triangle will extend 30% of
 // PointSet width to both left and right.
-const float kAlpha = 0.3;
+const float kAlpha = 0.3f;
 
 struct Point;
 class Triangle;

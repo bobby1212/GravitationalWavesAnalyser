@@ -172,6 +172,7 @@ void BasicFrame::OnFileOpen(wxCommandEvent &event)
 	dataStorage->LoadPoints(std::string(dialog->GetPath()));
 	UpdateIterationRange();
 	panelRender->SetIteration(0);
+	dataStorage->CalcMinMax(0);
     
     //Set nmb of point in text box
     nmbPoints->SetLabel(std::to_string(dataStorage->GetPointsCount(0)));
@@ -301,7 +302,7 @@ void BasicFrame::triangulatePoints(wxCommandEvent & event)
 
     Triangulation tri(errorHandler);
 
-	tri.Triangulate(dataStorage->GetPoints(iterationSlider->GetValue()), dataStorage->GetMin(iterationSlider->GetValue()), dataStorage->GetMax(iterationSlider->GetValue()));
+	tri.Triangulate(dataStorage->GetPoints(iterationSlider->GetValue(),true), dataStorage->GetMin(iterationSlider->GetValue()), dataStorage->GetMax(iterationSlider->GetValue()),panelRender->getMinRadius(),panelRender->getMaxRadius());
 
 	dataStorage->AddTriangles(tri.GetTriangles(),iterationSlider->GetValue());
 	Refresh();

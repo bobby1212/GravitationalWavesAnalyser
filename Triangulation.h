@@ -13,7 +13,7 @@ public:
 	Triangulation(ErrorHandler* errorHandler);
 	~Triangulation();
 
-	void Triangulate(std::vector<Point>* points, float min, float max);
+	void Triangulate(std::vector<Point>* points, float min, float max, float minRadius, float maxRadius);
 
 	std::list<Triangle*>& GetTriangles() { return trianglesMap; }
 private:

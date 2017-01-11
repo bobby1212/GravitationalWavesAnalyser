@@ -24,9 +24,9 @@ public:
     PointBinaryTreeSort();
     ~PointBinaryTreeSort();
 
-    std::list<Point*> sortedPoints;
+    std::list<Point> sortedPoints;
 
-    std::list<Point*> SortPointsXAxis(std::vector<Point>* points);
+    std::list<Point>* SortPointsXAxis(std::vector<Point>* points);
 
     void insert(Tree** root, std::vector<Point>::iterator newValue);
     void addToList(Tree* node);

@@ -11,19 +11,19 @@ PointBinaryTreeSort::~PointBinaryTreeSort()
 {
 }
 
-std::list<Point*> PointBinaryTreeSort::SortPointsXAxis(std::vector<Point>* points)
+std::list<Point>* PointBinaryTreeSort::SortPointsXAxis(std::vector<Point>* points)
 {
     Tree* root;
     root = nullptr;
 
-    for (int i = 0; i < points->size(); i++)
+    for (size_t i = 0; i < points->size(); i++)
     {
         insert(&root, points->begin()+i);
     }
 
     addToList(root);
 
-    return sortedPoints;
+    return &sortedPoints;
 }
 
 void PointBinaryTreeSort::insert(Tree** root, std::vector<Point>::iterator newValue)
@@ -100,7 +100,7 @@ void PointBinaryTreeSort::addToList(Tree* node)
     else
     {
         addToList(node->left);
-        sortedPoints.push_back(node->point);
+        sortedPoints.push_back(*node->point);
         addToList(node->right);
     }
 

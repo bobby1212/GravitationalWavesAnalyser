@@ -16,7 +16,7 @@ std::map<int, std::vector<Point>>* DataStorage::GetPoints()
 	return &points;
 }
 
-std::vector<Point>* DataStorage::GetPoints(int iteration)
+std::vector<Point>* DataStorage::GetPoints(int iteration, bool single)
 {
 	if (points.find(iteration) == points.end())
 	{
@@ -36,6 +36,34 @@ std::vector<Point>* DataStorage::GetPoints(int iteration)
 			errorHandler->DisplayError("Error at loading points!");
 			return nullptr;
 		}
+	}
+
+	if (single)
+	{
+		PointBinaryTreeSort sort;	
+		std::list<Point>* sortedPoints = sort.SortPointsXAxis(&points[iteration]);
+
+		for (std::list<Point>::iterator itr = sortedPoints->begin(); itr != --sortedPoints->end();)
+		{
+			float x1 = itr->x;
+			float y1 = itr->y;
+			float x2 = (++itr)->x;
+			float y2 = itr->y;
+
+			if (x1 == x2 && y1 == y2)
+			{
+				itr = sortedPoints->erase(itr);
+				--itr;
+			}
+		}
+
+		points[iteration].clear();
+		for (auto &i : *sortedPoints)
+		{
+			points[iteration].push_back(i);
+		}
+
+		//std::random_shuffle(points[iteration].begin(), points[iteration].end()); //Neccessery? I don't think so...
 	}
 
 	return &points[iteration];
@@ -94,8 +122,8 @@ void DataStorage::LoadPoints(std::string& filename)
 		input.read((char*)&nmbPoints, sizeof(int));
 		input.read((char*)&actualItr, sizeof(int));
 
-		/*if (actualItr > 10)
-			break;*/
+		if (actualItr > 10)
+			break;
 
 		if (actualItr < 0 || nmbPoints <= 0)
 			continue;

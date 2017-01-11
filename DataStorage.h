@@ -2,6 +2,7 @@
 #include "SharedDefines.h"
 #include "ErrorHandler.h"
 #include "BasicFrame.h"
+#include "PointBinaryTreeSort.h"
 
 using namespace p2t;
 
@@ -16,7 +17,7 @@ public:
 	~DataStorage();
 
 	std::map<int, std::vector<Point>>* GetPoints();
-	std::vector<Point>* GetPoints(int iteration);
+	std::vector<Point>* GetPoints(int iteration, bool single = false); //Single points is only used at Triangulation, because it's very slow
 	std::map<int, std::list<Triangle*>> GetTriangles();
 	std::list<Triangle*> GetTriangles(int iteration);
 	void Reset(); //Resets the object and deletes all points and triangles

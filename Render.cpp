@@ -12,9 +12,9 @@ Render::Render(wxFrame* _parent, DataStorage* _dataStorage, int* args, int heigh
     glContext = new wxGLContext(this);
     SetBackgroundStyle(wxBG_STYLE_PAINT);
     Init();
-	actualItr = 0;
+	actualItr = START_ITERATION;
 
-    rotationSpeed = 1.05f;
+    rotationSpeed = 1.15f;
     translationSpeed = 0.05f;
 
     deltaTime = 0;
@@ -23,22 +23,19 @@ Render::Render(wxFrame* _parent, DataStorage* _dataStorage, int* args, int heigh
     maxX = -10000.0f;
     minY = 10000.0f;
     maxY = -10000.0f;
-    divisor = 362;
-    heightDivisor = 1000000;
+    divisor = 700.0f;
+    heightMultiplicator = 0.0001f;
     maxZ = -10000.0f;
     minZ = 10000.0f;
-    offsetX = 0.0f;
-    offsetY = 0.0f;
-    offsetZ = 0.0f;
     translationX = 0.0f;
     translationY = 0.0f;
     translationZ = 0.0f;
     rotationX = 0.0f;
     rotationY = 0.0f;
-    maxHeight = 100000.0f;
-    minHeight = -10000.0f;
-    minRadius = 0.0f;
-    maxRadius = 10000.0f;
+    maxHeight = 0.25f;
+    minHeight = -0.25f;
+    minRadius = 12.0f;
+    maxRadius = 600.0f;
 }
 
 Render::~Render()
@@ -103,8 +100,31 @@ void Render::render(wxPaintEvent& evt)
             */
             //Render conditions (Normally set in option panel)
             radius = distance(Point(0, 0, 0), i);
-            if (i.z-offsetZ < maxHeight && i.z-offsetZ > minHeight && radius < maxRadius && radius > minRadius)
-                glVertex3f((i.x + offsetX) / divisor, (i.y + offsetY) / divisor, (i.z - offsetZ) / heightDivisor);
+            if (i.z < maxHeight && i.z > minHeight && radius < maxRadius && radius > minRadius)
+			{
+				//Must be optimized
+				float green = 0.0f;
+				float blue = 0.0f;
+				float red = 0.0f;
+				if (i.z >= minHeight && i.z < (minHeight + maxHeight) / 2)
+				{
+					green = mapValue(i.z, minHeight, maxHeight);
+					red = 1.0f - green;
+					blue = 0.0f;
+				}
+				else if (i.z > (minHeight + maxHeight) / 2 && i.z <= maxHeight)
+				{
+					red = 0.0f;
+					blue = mapValue(i.z, minHeight, maxHeight);
+					green = 1.0f - blue;
+				}
+				else
+				{
+					red = 1.0f;
+				}
+				glColor3f(red, green, blue);
+				glVertex3f(i.x / divisor, i.y / divisor, i.z * heightMultiplicator);
+			}
         }
         glEnd();
     }
@@ -116,22 +136,22 @@ void Render::render(wxPaintEvent& evt)
         {
             glColor3f(1.0f, 1.0f, 1.0f);
             glBegin(GL_TRIANGLES);
-            glVertex3f((i->GetPoint(0)->x + offsetX) / divisor, (i->GetPoint(0)->y + offsetY) / divisor, (i->GetPoint(0)->z - offsetZ) / heightDivisor);
-            glVertex3f((i->GetPoint(1)->x + offsetX) / divisor, (i->GetPoint(1)->y + offsetY) / divisor, (i->GetPoint(1)->z - offsetZ) / heightDivisor);
-            glVertex3f((i->GetPoint(2)->x + offsetX) / divisor, (i->GetPoint(2)->y + offsetY) / divisor, (i->GetPoint(2)->z - offsetZ) / heightDivisor);
+            glVertex3f(i->GetPoint(0)->x / divisor, i->GetPoint(0)->y / divisor, i->GetPoint(0)->z  / heightMultiplicator);
+            glVertex3f(i->GetPoint(1)->x / divisor, i->GetPoint(1)->y / divisor, i->GetPoint(1)->z  / heightMultiplicator);
+            glVertex3f(i->GetPoint(2)->x / divisor, i->GetPoint(2)->y / divisor, i->GetPoint(2)->z  / heightMultiplicator);
             glEnd();
             glColor3f(0.0f, 1.0f, 0.0f);
             glBegin(GL_LINES);
-            glVertex3f((i->GetPoint(0)->x + offsetX) / divisor, (i->GetPoint(0)->y + offsetY) / divisor, (i->GetPoint(0)->z - offsetZ) / heightDivisor);
-            glVertex3f((i->GetPoint(1)->x + offsetX) / divisor, (i->GetPoint(1)->y + offsetY) / divisor, (i->GetPoint(1)->z - offsetZ) / heightDivisor);
+            glVertex3f(i->GetPoint(0)->x / divisor, i->GetPoint(0)->y / divisor, i->GetPoint(0)->z  / heightMultiplicator);
+            glVertex3f(i->GetPoint(1)->x / divisor, i->GetPoint(1)->y / divisor, i->GetPoint(1)->z  / heightMultiplicator);
             glEnd();
             glBegin(GL_LINES);
-            glVertex3f((i->GetPoint(1)->x + offsetX) / divisor, (i->GetPoint(1)->y + offsetY) / divisor, (i->GetPoint(1)->z - offsetZ) / heightDivisor);
-            glVertex3f((i->GetPoint(2)->x + offsetX) / divisor, (i->GetPoint(2)->y + offsetY) / divisor, (i->GetPoint(2)->z - offsetZ) / heightDivisor);
+            glVertex3f(i->GetPoint(1)->x / divisor, i->GetPoint(1)->y / divisor, i->GetPoint(1)->z  / heightMultiplicator);
+            glVertex3f(i->GetPoint(2)->x / divisor, i->GetPoint(2)->y / divisor, i->GetPoint(2)->z  / heightMultiplicator);
             glEnd();
             glBegin(GL_LINES);
-            glVertex3f((i->GetPoint(2)->x + offsetX) / divisor, (i->GetPoint(2)->y + offsetY) / divisor, (i->GetPoint(2)->z - offsetZ) / heightDivisor);
-            glVertex3f((i->GetPoint(0)->x + offsetX) / divisor, (i->GetPoint(0)->y + offsetY) / divisor, (i->GetPoint(0)->z - offsetZ) / heightDivisor);
+            glVertex3f(i->GetPoint(2)->x / divisor, i->GetPoint(2)->y / divisor, i->GetPoint(2)->z  / heightMultiplicator);
+            glVertex3f(i->GetPoint(0)->x / divisor, i->GetPoint(0)->y / divisor, i->GetPoint(0)->z  / heightMultiplicator);
             glEnd();
         }
     }
@@ -177,33 +197,20 @@ void Render::OnKeyDown(wxKeyEvent & event)
     Refresh();
 }
 
-void Render::calcValues()
+float Render::mapValue(float & value, float & oMin, float & oMax)
 {
-    float radius = 0.0f;
-    for (auto &i : *dataStorage->GetPoints(actualItr))
-    {
-        radius = distance(Point(0, 0, 0), i);
-        if (i.z - offsetZ < maxHeight && i.z - offsetZ > minHeight && radius < maxRadius && radius > minRadius)
-        {
-            if (i.x > maxX)
-                maxX = i.x;
-            if (i.x < minX)
-                minX = i.x;
-            if (i.y > maxY)
-                maxY = i.y;
-            if (i.y < minY)
-                minY = i.y;
-            if (i.z > maxZ)
-                maxZ = i.z;
-            if (i.z < minZ)
-                minZ = i.z;
-        }
-    }
+	float oSpan = oMax - oMin;
+	float dSpan = 1.0f;
 
-    divisor = fabs(minX - maxX);
-    heightDivisor = fabs(minZ - maxZ);
-    parent->SetStatusText("New render values calculated! maxX: " + std::to_string(maxX) + " minX: " + std::to_string(minX) + " divisor: " + std::to_string(divisor) + " heightDivisor: " + std::to_string(heightDivisor));
-    //TODO: Update option panel values
+	float valueScaled = (value - oMin) / oSpan;
+
+	return 0.0f + (valueScaled * dSpan);
+}
+
+void Render::SetIteration(int iteration)
+{
+	actualItr = iteration;
+	dataStorage->GetPoints(iteration);
 }
 
 /*void Render::removeDuplicates(float radius, wxStaticBox* nmbPointsText,Parser* parser,float variance)

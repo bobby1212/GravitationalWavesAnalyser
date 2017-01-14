@@ -23,7 +23,8 @@ std::vector<Point>* DataStorage::GetPoints(int iteration, bool single)
 		parent->SetStatusText("Points for iteration " + std::to_string(iteration) + " don't exist. They are loading...");
 		if (pointsExt.find(iteration) == pointsExt.end())
 		{
-			errorHandler->DisplayError("There are no points for this iteration!");
+			if(iteration != START_ITERATION)
+				errorHandler->DisplayError("There are no points for this iteration!");
 			return nullptr;
 		}
 		if (LoadPoints(iteration))
@@ -122,13 +123,12 @@ void DataStorage::LoadPoints(std::string& filename)
 		input.read((char*)&nmbPoints, sizeof(int));
 		input.read((char*)&actualItr, sizeof(int));
 
-		if (actualItr > 10)
-			break;
-
-		if (actualItr < 0 || nmbPoints <= 0)
-			continue;
-
 		int pointsSize = nmbPoints * 3 * 4;
+		if (actualItr < START_ITERATION)
+		{
+			input.seekg(input.tellg() + (std::streampos)pointsSize);
+			continue;
+		}
 		
 		pointsExt[actualItr].push_back(std::make_pair(input.tellg(), (long long)input.tellg() + pointsSize));
 
@@ -140,7 +140,7 @@ void DataStorage::LoadPoints(std::string& filename)
 		input.seekg(actualPosition);
 	}
 
-	LoadPoints(0);
+	LoadPoints(START_ITERATION);
 }
 
 void DataStorage::AddTriangles(std::list<Triangle*>& _triangles, int iteration)
@@ -222,13 +222,14 @@ bool DataStorage::LoadPoints(int iteration)
 			tempPoint.y = tempFloat;
 
 			input.read((char*)&tempFloat, sizeof(float));
-			tempPoint.z = tempFloat;
+			tempPoint.z = tempFloat * 10000.0f;
 
 			points[iteration].push_back(tempPoint);
 
 			actualPosition = input.tellg();
 		}
 	}
+	CalcMinMax(iteration);
 
 	return true;
 }
@@ -242,5 +243,3 @@ bool DataStorage::OpenFilestream(std::string & filename)
 
 	return false;
 }
-
-

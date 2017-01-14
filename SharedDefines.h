@@ -20,6 +20,8 @@
 #include <set>
 #include <map>
 
+#define START_ITERATION 750
+
 enum IDs
 {
 	ID_PANEL_OPTIONS,
@@ -35,7 +37,7 @@ enum IDs
     ID_MOUSE_MOTION,
 
 	ID_OPTION_TEXTCHANGED,
-	ID_OPTION_HEIGHTDIVISOR,
+	ID_OPTION_heightMultiplicator,
 	ID_OPTION_DIVISOR,
     ID_OPTION_MAX_HEIGHT,
     ID_OPTION_MIN_HEIGHT,

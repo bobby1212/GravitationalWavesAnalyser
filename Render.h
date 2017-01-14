@@ -21,24 +21,20 @@ public:
 	void render(wxPaintEvent& evt);
 	void activateRenderTriangles(bool);
 	void activateRenderPoints(bool);
-    //Recalculates the render values based on rendered points (Called from setPoints and from handler(Not implemented yet))
-    void calcValues();
 
     //Option functions (Called by handlers)
-	void setHeightDivisor(float _heightDivisor) { heightDivisor = _heightDivisor; }
+	void setheightMultiplicator(float _heightMultiplicator) { heightMultiplicator = _heightMultiplicator; }
 	void setDivisor(float _divisor) { divisor = _divisor; }
     void setMaxHeight(float _newHeight) { maxHeight = _newHeight; }
     void setMinHeight(float _newHeight) { minHeight = _newHeight; }
     void setMinRadius(float _radius) { minRadius = _radius; }
     void setMaxRadius(float _radius) { maxRadius = _radius; }
-	void SetIteration(int itr) { actualItr = itr; }
+	void SetIteration(int iteration);
 
 	//Input handlers
 	void OnKeyDown(wxKeyEvent& event);
 
     //Private member get functions;
-    float getMaxHeight() { return maxHeight; }
-    float getMinHeight() { return minHeight; }
     float getMaxRadius() { return maxRadius; }
     float getMinRadius() { return minRadius; }
 
@@ -61,12 +57,9 @@ private:
 	float minY;
 	float maxY;
 	float divisor;
-	float heightDivisor;
+	float heightMultiplicator;
 	float maxZ;
 	float minZ;
-	float offsetX;
-	float offsetY;
-	float offsetZ;
 	float translationX;
 	float translationY;
 	float translationZ;
@@ -85,4 +78,6 @@ private:
     std::mutex progressCounterMutex;
     std::vector<Point> duplicatePoints;
     long long totalSize;
+
+	float mapValue(float& value, float& oMin, float& oMax);
 };

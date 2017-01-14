@@ -18,10 +18,9 @@ public:
 
 	//Event handler
 	void OnFileOpen(wxCommandEvent& event);
-    void OnExportHeightmap(wxCommandEvent& event);
 	void OnExportStl(wxCommandEvent& event);
 	void OnExportStlAllItr(wxCommandEvent& event);
-	void setHeightDivisor(wxCommandEvent& event);
+	void setheightMultiplicator(wxCommandEvent& event);
 	void setDivisor(wxCommandEvent& event);
     void setMaxHeight(wxCommandEvent& event);
     void setMinHeight(wxCommandEvent& event);
@@ -58,18 +57,19 @@ private:
 	//Option Panel
 	wxBoxSizer* optionsSizer;
 	wxBoxSizer* heightDivisorSizer;
+	wxBoxSizer* heightMultiplicatorSizer;
 	wxBoxSizer* divisorSizer;
     wxBoxSizer* nmbPointSizer;
     wxBoxSizer* maxHeightSizer;
     wxBoxSizer* minHeightSizer;
 
-	wxStaticText* heightDivisorText;
+	wxStaticText* heightMultiplicatorText;
 	wxStaticText* divisorText;
     wxStaticText* nmbPointsText;
     wxStaticText* maxHeightText;
     wxStaticText* minHeightText;
 
-	wxTextCtrl* heightDivisor;
+	wxTextCtrl* heightMultiplicator;
 	wxTextCtrl* divisor;
     wxStaticBox* nmbPoints;
     wxTextCtrl* maxHeight;

@@ -31,13 +31,13 @@ bool BasicFrame::CreatePanels()
     //Options Panel
     optionsSizer = new wxBoxSizer(wxVERTICAL);
 
-    heightDivisorSizer = new wxBoxSizer(wxHORIZONTAL);
-    heightDivisorText = new wxStaticText(panelOptions, wxID_ANY, "Height Divisor:");
-    heightDivisor = new wxTextCtrl(panelOptions, ID_OPTION_HEIGHTDIVISOR, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
+    heightMultiplicatorSizer = new wxBoxSizer(wxHORIZONTAL);
+    heightMultiplicatorText = new wxStaticText(panelOptions, wxID_ANY, "Height Divisor:");
+    heightMultiplicator = new wxTextCtrl(panelOptions, ID_OPTION_heightMultiplicator, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
 
     divisorSizer = new wxBoxSizer(wxHORIZONTAL);
     divisorText = new wxStaticText(panelOptions, wxID_ANY, "Divisor:");
-    divisor = new wxTextCtrl(panelOptions, ID_OPTION_DIVISOR, "362", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
+    divisor = new wxTextCtrl(panelOptions, ID_OPTION_DIVISOR, "700", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
 
     nmbPointSizer = new wxBoxSizer(wxHORIZONTAL);
     nmbPointsText = new wxStaticText(panelOptions, wxID_ANY, "Number of points:");
@@ -45,12 +45,11 @@ bool BasicFrame::CreatePanels()
 
     maxHeightSizer = new wxBoxSizer(wxHORIZONTAL);
     maxHeightText = new wxStaticText(panelOptions, wxID_ANY, "Maximum height:");
-    maxHeight = new wxTextCtrl(panelOptions, ID_OPTION_MAX_HEIGHT, "100000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
+    maxHeight = new wxTextCtrl(panelOptions, ID_OPTION_MAX_HEIGHT, "0.25", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
 
     minHeightSizer = new wxBoxSizer(wxHORIZONTAL);
     minHeightText = new wxStaticText(panelOptions, wxID_ANY, "Minimum height:");
-    minHeight = new wxTextCtrl(panelOptions, ID_OPTION_MIN_HEIGHT, "-100000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
-
+    minHeight = new wxTextCtrl(panelOptions, ID_OPTION_MIN_HEIGHT, "-0.25", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
     removeDuplicatesSizer = new wxBoxSizer(wxHORIZONTAL);
     removeDuplicatesButton = new wxButton(panelOptions, ID_OPTION_REMOVE_DUPLICATES, "Remove duplicates");
     removeDuplicatesVariance = new wxTextCtrl(panelOptions, ID_OPTION_REMOVE_DUPLICATES_VARIANCE, "1.0", wxDefaultPosition, wxDefaultSize, wxTE_CENTER);
@@ -61,8 +60,8 @@ bool BasicFrame::CreatePanels()
 
     radiusOptionSizer = new wxBoxSizer(wxHORIZONTAL);
     radiusOption = new wxStaticText(panelOptions, wxID_ANY, "Max. and min. radius");
-    maxRadius = new wxTextCtrl(panelOptions,ID_OPTION_MAX_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
-    minRadius = new wxTextCtrl(panelOptions, ID_OPTION_MIN_RADIUS, "10000", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
+    maxRadius = new wxTextCtrl(panelOptions,ID_OPTION_MAX_RADIUS, "600", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
+    minRadius = new wxTextCtrl(panelOptions, ID_OPTION_MIN_RADIUS, "12", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER | wxTE_CENTRE);
 
 	iterationSlider = new wxSlider(panelOptions, ID_OPTION_ITERATION, 0, 0, 1, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL | wxSL_MIN_MAX_LABELS | wxSL_AUTOTICKS | wxSL_VALUE_LABEL);
 
@@ -73,14 +72,14 @@ bool BasicFrame::CreatePanels()
     divisorSizer->Add(divisorText,wxEXPAND);
     divisorSizer->Add(divisor,wxALIGN_CENTER | wxEXPAND);
 
-    heightDivisorSizer->Add(heightDivisorText,wxEXPAND);
-    heightDivisorSizer->Add(heightDivisor,wxALIGN_CENTER | wxEXPAND);
-
     maxHeightSizer->Add(maxHeightText, wxEXPAND);
     maxHeightSizer->Add(maxHeight, wxALIGN_CENTER | wxEXPAND);
 
     minHeightSizer->Add(minHeightText, wxEXPAND);
     minHeightSizer->Add(minHeight, wxALIGN_CENTER | wxEXPAND);
+
+    heightMultiplicatorSizer->Add(heightMultiplicatorText,wxEXPAND);
+    heightMultiplicatorSizer->Add(heightMultiplicator,wxALIGN_CENTER | wxEXPAND);
 
     removeDuplicatesSizer->Add(removeDuplicatesButton, wxEXPAND);
     removeDuplicatesSizer->Add(removeDuplicatesVariance, wxEXPAND);
@@ -93,7 +92,7 @@ bool BasicFrame::CreatePanels()
     radiusOptionSizer->Add(minRadius, wxEXPAND);
 
     optionsSizer->Add(divisorSizer,0, wxEXPAND);
-    optionsSizer->Add(heightDivisorSizer,0, wxEXPAND);
+    optionsSizer->Add(heightMultiplicatorSizer,0, wxEXPAND);
     optionsSizer->Add(nmbPointSizer, 0, wxEXPAND);
     optionsSizer->Add(maxHeightSizer, 0, wxEXPAND);
     optionsSizer->Add(minHeightSizer, 0, wxEXPAND);
@@ -140,7 +139,7 @@ bool BasicFrame::CreateMenu()
 
 //Event handling
 BEGIN_EVENT_TABLE(BasicFrame, wxFrame)
-EVT_TEXT_ENTER(ID_OPTION_HEIGHTDIVISOR, BasicFrame::setHeightDivisor)
+EVT_TEXT_ENTER(ID_OPTION_heightMultiplicator, BasicFrame::setheightMultiplicator)
 EVT_TEXT_ENTER(ID_OPTION_DIVISOR, BasicFrame::setDivisor)
 EVT_TEXT_ENTER(ID_OPTION_MAX_HEIGHT, BasicFrame::setMaxHeight)
 EVT_TEXT_ENTER(ID_OPTION_MIN_HEIGHT, BasicFrame::setMinHeight)
@@ -150,7 +149,6 @@ EVT_TEXT_ENTER(ID_OPTION_MIN_RADIUS, BasicFrame::setMinRadius)
 EVT_TEXT_ENTER(ID_OPTION_MAX_RADIUS, BasicFrame::setMaxRadius)
 EVT_SCROLL_CHANGED(BasicFrame::SetIteration)
 EVT_MENU(ID_FILE_OPEN, BasicFrame::OnFileOpen)
-EVT_MENU(ID_EXPORT_HEIGHTMAP, BasicFrame::OnExportHeightmap)
 EVT_MENU(ID_EXPORT_STL, BasicFrame::OnExportStl)
 EVT_MENU(ID_EXPORT_STL_ALL_ITERATIONS, BasicFrame::OnExportStlAllItr)
 
@@ -171,29 +169,13 @@ void BasicFrame::OnFileOpen(wxCommandEvent &event)
 
 	dataStorage->LoadPoints(std::string(dialog->GetPath()));
 	UpdateIterationRange();
-	panelRender->SetIteration(0);
-	dataStorage->CalcMinMax(0);
+	panelRender->SetIteration(START_ITERATION);
     
     //Set nmb of point in text box
-    nmbPoints->SetLabel(std::to_string(dataStorage->GetPointsCount(0)));
+    nmbPoints->SetLabel(std::to_string(dataStorage->GetPointsCount(START_ITERATION)));
 
     panelRender->activateRenderPoints(true);
     Refresh();
-}
-
-void BasicFrame::OnExportHeightmap(wxCommandEvent & event)
-{
-    if (dataStorage)
-    {
-        HeightmapExporter exporter(dataStorage->GetPoints(0));
-        if (!exporter.exportHeightmap("out.hm", panelRender->GetMaxHeight(), panelRender->getMinHeight(), panelRender->getMinRadius(), panelRender->getMaxRadius()))
-            errorHandler->DisplayError("Error at exporting file");
-        else
-            SetStatusText("Export successful");
-    }
-    else
-        errorHandler->DisplayError("Couldn't export file because no points are loaded");
-    return;
 }
 
 void BasicFrame::OnExportStl(wxCommandEvent & event)
@@ -220,11 +202,11 @@ void BasicFrame::OnExportStlAllItr(wxCommandEvent & event)
 	}
 }
 
-void BasicFrame::setHeightDivisor(wxCommandEvent &e)
+void BasicFrame::setheightMultiplicator(wxCommandEvent &e)
 {
     try
     {
-        panelRender->setHeightDivisor(boost::lexical_cast<float>(e.GetString()));
+        panelRender->setheightMultiplicator(boost::lexical_cast<float>(e.GetString()));
         SetStatusText("Height Divisor changed");
         panelRender->Refresh();
     }
@@ -283,7 +265,6 @@ void BasicFrame::setMinHeight(wxCommandEvent & e)
         errorHandler->DisplayError(ERROR_UNKNOWN);
     }
 }
-
 void BasicFrame::removeDuplicates(wxCommandEvent& event) 
 { 
     try
@@ -313,7 +294,6 @@ void BasicFrame::setMinRadius(wxCommandEvent & event)
     try
     {
         panelRender->setMinRadius(boost::lexical_cast<float>(event.GetString()));
-        panelRender->calcValues();
         Refresh();
     }
     catch (boost::bad_lexical_cast)
@@ -327,7 +307,6 @@ void BasicFrame::setMaxRadius(wxCommandEvent & event)
     try
     {
         panelRender->setMaxRadius(boost::lexical_cast<float>(event.GetString()));
-        panelRender->calcValues();
         Refresh();
     }
     catch (boost::bad_lexical_cast)
@@ -351,7 +330,8 @@ void BasicFrame::UpdateIterationRange()
 {
 	if (dataStorage)
 	{
-		iterationSlider->SetMax(dataStorage->GetIterationCount());
+		iterationSlider->SetMin(START_ITERATION);
+		iterationSlider->SetMax(dataStorage->GetIterationCount() + START_ITERATION);
 	}
 }
 
